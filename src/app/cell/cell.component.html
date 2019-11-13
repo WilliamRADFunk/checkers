@@ -1,10 +1,9 @@
-<div *ngIf="cell.isClue"
-	class="cell-size align-middle text-center"
+<div class="cell-size align-middle text-center"
 	[class.text-white]="gameOver">
-	<div class="font-weight-bold clue-text">{{ cell.value }}</div>
+	<div class="font-weight-bold clue-text">1</div>
 </div>
 
-<div *ngIf="!cell.isClue"
+<!-- <div *ngIf="!cell.isClue"
 	class="cell-size"
 	[class.text-white]="gameOver"
 	(click)="cellClicked()"
@@ -21,4 +20,4 @@
 			<span *ngFor="let flag of cell.flagValues" class="flag flag-{{flag}}">{{ flag }}</span>
 		</div>
 	</span>
-</div>
+</div> -->

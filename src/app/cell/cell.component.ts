@@ -10,8 +10,7 @@ import { Subscription } from 'rxjs';
 export class CellComponent implements OnDestroy, OnInit {
   cell: Cell;
   gameOver: boolean;
-  @Input() position: [number, number, number];
-  @Input() boardRegistryIndex: number;
+  @Input() position: [number, number];
   subscriptions: Subscription[] = [];
 
   constructor() { }
