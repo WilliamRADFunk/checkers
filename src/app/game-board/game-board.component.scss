@@ -1,0 +1,20 @@
+sudoku-quadrant:nth-child(n) {
+	border-right: 1px solid #333333;
+}
+sudoku-quadrant:nth-child(3n) {
+	border-right: 1px solid #DEE2E6;
+}
+sudoku-quadrant.quadrant-size:not(.first-row) {
+	border-top: 1px solid #333333;
+}
+.quadrant-size {
+	height: 12vw;
+	min-height: 12vw;
+	position: relative;
+}
+.board-size {
+	height: 36vw;
+	min-height: 36vw;
+	min-width: 36vw;
+	width: 36vw;
+}

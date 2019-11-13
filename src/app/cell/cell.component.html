@@ -1,0 +1,24 @@
+<div *ngIf="cell.isClue"
+	class="cell-size align-middle text-center"
+	[class.text-white]="gameOver">
+	<div class="font-weight-bold clue-text">{{ cell.value }}</div>
+</div>
+
+<div *ngIf="!cell.isClue"
+	class="cell-size"
+	[class.text-white]="gameOver"
+	(click)="cellClicked()"
+	style="position: relative;">
+	<span *ngIf="reveal" class="align-middle text-center ">
+		<div>{{ cell.value }}</div>
+	</span>
+	<span *ngIf="!reveal">
+		<div *ngIf="activeControlMode && cell.userAssignedValue"
+            class="align-middle text-center"
+            [class.locked-cell-text]="cell.locked && !gameOver">{{ cell.userAssignedValue}}</div>
+		<div *ngIf="!activeControlMode"
+			class="flags">
+			<span *ngFor="let flag of cell.flagValues" class="flag flag-{{flag}}">{{ flag }}</span>
+		</div>
+	</span>
+</div>

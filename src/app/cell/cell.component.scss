@@ -1,0 +1,76 @@
+.cell-size {
+	font-size: 2.5vw;
+	height: 4vw;
+	min-height: 4vw;
+	min-width: 4vw;
+	width: 4vw;
+
+	&:nth-child(n) {
+		border: 1px solid #DEE2E6;
+	}
+
+	& .flags {
+		color: #FF0000;
+		font-size: 1.15vw;
+		font-weight: lighter;
+		line-height: 1.15vw;
+
+		& .flag {
+			position: absolute;
+		}
+
+		& .flag-1 {
+			left: 0;
+			top: 0;
+		}
+
+		& .flag-2 {
+			left: 42.5%;
+			top: 0;
+		}
+
+		& .flag-3 {
+			right: 0;
+			top: 0;
+		}
+
+		& .flag-4 {
+			left: 0;
+			top: 35%;
+		}
+
+		& .flag-5 {
+			left: 42.5%;
+			top: 35%;
+		}
+
+		& .flag-6 {
+			right: 0;
+			top: 35%;
+		}
+
+		& .flag-7 {
+			left: 0;
+			bottom: 0;
+		}
+
+		& .flag-8 {
+			left: 42.5%;
+			bottom: 0;
+		}
+
+		& .flag-9 {
+			right: 0;
+			bottom: 0;
+		}
+	}
+}
+
+.clue-text {
+    color: #0059B3;
+}
+
+.locked-cell-text {
+    color: #85BB65;
+    font-weight: bold;
+}
