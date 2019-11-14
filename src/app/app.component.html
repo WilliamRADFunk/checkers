@@ -1,5 +1,14 @@
-<div class="container">
-	<div class="col-4"></div>
-	<checkers-game-board [board]="board"></checkers-game-board>
-	<div class="col-4"></div>
+<div class="container-fluid">
+	<div class="d-flex justify-content-center">
+		<div class="col-2"></div>
+		<div class="col-8 text-center mt-2">
+			<span class="h1 d-block d-sm-inline-block mb-2 mb-sm-0">Checkers</span>
+		</div>
+		<div class="col-2"></div>
+	</div>
+	<div class="row no-gutters mt-3">
+		<div class="col-4"></div>
+		<checkers-game-board [board]="board"></checkers-game-board>
+		<div class="col-4"></div>
+	</div>
 </div>

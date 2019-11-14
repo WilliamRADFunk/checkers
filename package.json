@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"scripts": {
 		"ng": "ng",
-		"start": "ng serve example --disableHostCheck=true",
+		"start": "ng serve",
 		"build": "run-s lint test clean build:ng copy:configs",
 		"build:ng": "ng build",
 		"clean": "rimraf dist/",
