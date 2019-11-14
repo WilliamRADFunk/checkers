@@ -11,6 +11,8 @@ export class CellComponent implements OnDestroy, OnInit {
 	cell: Cell;
 	gameOver: boolean;
 	@Input() position: [number, number];
+	isOnSquare: boolean;
+	player: 'black';
 	subscriptions: Subscription[] = [];
 
 	constructor() { }
@@ -20,7 +22,9 @@ export class CellComponent implements OnDestroy, OnInit {
 		this.subscriptions = [];
 	}
 
-	ngOnInit() { }
+	ngOnInit() {
+		this.isOnSquare = (this.position[0] % 2) + (this.position[1] % 2) === 1;
+	}
 
 	cellClicked() { }
 
