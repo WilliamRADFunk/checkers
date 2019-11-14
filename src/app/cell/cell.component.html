@@ -2,6 +2,6 @@
 	[class.off-square]="!isOnSquare"
 	[class.on-square]="isOnSquare">
 	<div class="font-weight-bold clue-text">
-		<checkers-man *ngIf="isOnSquare" [player]="player"></checkers-man>
+		<checkers-man *ngIf="isOnSquare" [player]="cell.player"></checkers-man>
 	</div>
 </div>

@@ -1,1 +1,6 @@
-<span class="fa fa-arrow-circle-up"></span>
+<ng-container *ngIf="player === 1; else opponent">
+    <span class="fa fa-arrow-circle-up"></span>
+</ng-container>
+<ng-template #opponent>
+    <span class="fa fa-arrow-circle-up rotate"></span>
+</ng-template>

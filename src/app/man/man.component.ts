@@ -6,7 +6,8 @@ import { Component, OnInit, Input } from '@angular/core';
 	styleUrls: ['./man.component.scss']
 })
 export class ManComponent implements OnInit {
-	@Input() player: string;
+	@Input() player: number;
+	@Input() playerColor: string;
 
 	constructor() { }
 

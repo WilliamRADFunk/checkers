@@ -8,11 +8,9 @@ import { Subscription } from 'rxjs';
 	styleUrls: ['./cell.component.scss']
 })
 export class CellComponent implements OnDestroy, OnInit {
-	cell: Cell;
+	@Input() cell: Cell;
 	gameOver: boolean;
-	@Input() position: [number, number];
 	isOnSquare: boolean;
-	player: 'black';
 	subscriptions: Subscription[] = [];
 
 	constructor() { }
@@ -23,7 +21,7 @@ export class CellComponent implements OnDestroy, OnInit {
 	}
 
 	ngOnInit() {
-		this.isOnSquare = (this.position[0] % 2) + (this.position[1] % 2) === 1;
+		this.isOnSquare = (this.cell.position[0] % 2) + (this.cell.position[1] % 2) === 1;
 	}
 
 	cellClicked() { }

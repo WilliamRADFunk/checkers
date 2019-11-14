@@ -9,10 +9,266 @@ import { Board } from '../models/board';
 	styleUrls: ['./game-board.component.scss']
 })
 export class GameBoardComponent implements OnDestroy, OnChanges, OnInit {
-	@Input() board: Board;
-	gameOver: boolean;
-	isLoading: boolean = true;
-	subscriptions: Subscription[] = [];
+	public board: Board = {
+		cellStates: [
+			[
+				{
+					player: 2,
+					playerColor: 'black',
+					position: [0, 0],
+					value: 1
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [0, 1],
+					value: 0
+				},
+				{
+					player: 2,
+					playerColor: 'black',
+					position: [0, 2],
+					value: 1
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [0, 3],
+					value: 0
+				},
+				{
+					player: 2,
+					playerColor: 'black',
+					position: [0, 4],
+					value: 1
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [0, 5],
+					value: 0
+				},
+				{
+					player: 2,
+					playerColor: 'black',
+					position: [0, 6],
+					value: 1
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [0, 7],
+					value: 0
+				},
+			],
+			[
+				{
+					player: 0,
+					playerColor: '',
+					position: [1, 0],
+					value: 0
+				},
+				{
+					player: 2,
+					playerColor: 'black',
+					position: [1, 1],
+					value: 1
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [1, 2],
+					value: 0
+				},
+				{
+					player: 2,
+					playerColor: 'black',
+					position: [1, 3],
+					value: 1
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [1, 4],
+					value: 0
+				},
+				{
+					player: 2,
+					playerColor: 'black',
+					position: [1, 5],
+					value: 1
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [1, 6],
+					value: 0
+				},
+				{
+					player: 2,
+					playerColor: 'black',
+					position: [1, 7],
+					value: 1
+				},
+			],
+			[
+				{
+					player: 2,
+					playerColor: 'black',
+					position: [2, 0],
+					value: 1
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [2, 1],
+					value: 0
+				},
+				{
+					player: 2,
+					playerColor: 'black',
+					position: [2, 2],
+					value: 1
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [2, 3],
+					value: 0
+				},
+				{
+					player: 2,
+					playerColor: 'black',
+					position: [2, 4],
+					value: 1
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [2, 5],
+					value: 0
+				},
+				{
+					player: 2,
+					playerColor: 'black',
+					position: [2, 6],
+					value: 1
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [2, 7],
+					value: 0
+				},
+			],
+			[
+				{
+					player: 0,
+					playerColor: '',
+					position: [3, 0],
+					value: 0
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [3, 1],
+					value: 0
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [3, 2],
+					value: 0
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [3, 3],
+					value: 0
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [3, 4],
+					value: 0
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [3, 5],
+					value: 0
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [3, 6],
+					value: 0
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [3, 7],
+					value: 0
+				},
+			],
+			[
+				{
+					player: 0,
+					playerColor: '',
+					position: [4, 0],
+					value: 0
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [4, 1],
+					value: 0
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [4, 2],
+					value: 0
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [4, 3],
+					value: 0
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [4, 4],
+					value: 0
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [4, 5],
+					value: 0
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [4, 6],
+					value: 0
+				},
+				{
+					player: 0,
+					playerColor: '',
+					position: [4, 7],
+					value: 0
+				},
+			],
+			[null, null, null, null, null, null, null, null],
+			[null, null, null, null, null, null, null, null],
+			[null, null, null, null, null, null, null, null]
+		]
+	};
+	public gameOver: boolean;
+	public isLoading: boolean = true;
+	public subscriptions: Subscription[] = [];
 
 	constructor() { }
 
