@@ -3,32 +3,32 @@ import { Cell } from '../models/cell';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'checkers-cell',
-  templateUrl: './cell.component.html',
-  styleUrls: ['./cell.component.scss']
+	selector: 'checkers-cell',
+	templateUrl: './cell.component.html',
+	styleUrls: ['./cell.component.scss']
 })
 export class CellComponent implements OnDestroy, OnInit {
-  cell: Cell;
-  gameOver: boolean;
-  @Input() position: [number, number];
-  subscriptions: Subscription[] = [];
+	cell: Cell;
+	gameOver: boolean;
+	@Input() position: [number, number];
+	subscriptions: Subscription[] = [];
 
-  constructor() { }
+	constructor() { }
 
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s && s.unsubscribe());
-    this.subscriptions = [];
-  }
+	ngOnDestroy() {
+		this.subscriptions.forEach(s => s && s.unsubscribe());
+		this.subscriptions = [];
+	}
 
-  ngOnInit() { }
+	ngOnInit() { }
 
-  cellClicked() { }
+	cellClicked() { }
 
-  @HostListener('mouseover') onHover() {
-    console.log('mouseover');
-  }
+	@HostListener('mouseover') onHover() {
+		console.log('mouseover');
+	}
 
-  @HostListener('mouseleave') onLeave() {
-    console.log('mouseleave');
-  }
+	@HostListener('mouseleave') onLeave() {
+		console.log('mouseleave');
+	}
 }

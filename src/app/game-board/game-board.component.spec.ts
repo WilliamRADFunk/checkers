@@ -1,7 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GameBoardComponent } from './game-board.component';
-import { QuadrantComponent } from '../quadrant/quadrant.component';
 import { CellComponent } from '../cell/cell.component';
 
 describe('GameBoardComponent', () => {
@@ -12,7 +11,6 @@ describe('GameBoardComponent', () => {
 		TestBed.configureTestingModule({
 			declarations: [
 				GameBoardComponent,
-				QuadrantComponent,
 				CellComponent
 			]
 		}).compileComponents();
@@ -22,13 +20,8 @@ describe('GameBoardComponent', () => {
 		fixture = TestBed.createComponent(GameBoardComponent);
 		component = fixture.componentInstance;
 		component.board = {
-            cellStates: [],
-            inputPrimers: [],
-            isSolved: false,
-            level: 0,
-            boardRegistryIndex: 0
-        };
-		component.reveal = false;
+			cellStates: [],
+		};
 		fixture.detectChanges();
 	});
 

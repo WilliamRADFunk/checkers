@@ -4,33 +4,33 @@ import { Subscription } from 'rxjs';
 import { Board } from '../models/board';
 
 @Component({
-  selector: 'checkers-game-board',
-  templateUrl: './game-board.component.html',
-  styleUrls: ['./game-board.component.scss']
+	selector: 'checkers-game-board',
+	templateUrl: './game-board.component.html',
+	styleUrls: ['./game-board.component.scss']
 })
 export class GameBoardComponent implements OnDestroy, OnChanges, OnInit {
-  @Input() board: Board;
-  gameOver: boolean;
-  isLoading: boolean = true;
-  subscriptions: Subscription[] = [];
+	@Input() board: Board;
+	gameOver: boolean;
+	isLoading: boolean = true;
+	subscriptions: Subscription[] = [];
 
-  constructor() { }
+	constructor() { }
 
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s && s.unsubscribe());
-    this.subscriptions = [];
-  }
+	ngOnDestroy() {
+		this.subscriptions.forEach(s => s && s.unsubscribe());
+		this.subscriptions = [];
+	}
 
-  ngOnInit() {}
+	ngOnInit() {}
 
-  ngOnChanges(e: SimpleChanges) {
-    if (e.board && e.board.currentValue) {
-      setTimeout(() => {
-                this.board = e.board.currentValue;
-                this.isLoading = false;
-            }, 0);
-    } else if (e.board && !e.board.currentValue) {
-            this.isLoading = true;
-        }
-  }
+	ngOnChanges(e: SimpleChanges) {
+		if (e.board && e.board.currentValue) {
+			setTimeout(() => {
+				this.board = e.board.currentValue;
+				this.isLoading = false;
+			}, 0);
+		} else if (e.board && !e.board.currentValue) {
+			this.isLoading = true;
+		}
+	}
 }

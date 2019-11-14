@@ -1,21 +1,13 @@
-<div class="col-6 mw-100 center shadow-lg border rounded"
-    [class.bg-white]="!gameOver"
-    [class.bg-success]="gameOver">
-  <!-- <div class="board-size d-flex align-items-center">
-    <span class="ml-auto mr-auto">
-      <i class="fa fa-refresh fa-5x fa-spin" aria-hidden="true"></i>
-    </span>
-  </div> -->
-  <!-- <span *ngIf="!isLoading"> -->
-  <span>
-    <div *ngFor="let row of [0, 1, 2, 3, 4, 5, 6, 7];" class="row">
-      <div class="d-inline-block m-0 p-0">
-        <div *ngFor="let row of [0, 1, 2];" class="row no-gutters">
-          <checkers-cell
-            *ngFor="let col of [0, 1, 2, 3, 4, 5, 6, 7];"
-            [position]="[row, col]"></checkers-cell>
-        </div>
-      </div>
-    </div>
-  </span>
+<div class="col-6 mw-100 center shadow-lg border rounded">
+	<span>
+		<div *ngFor="let row of [0, 1, 2, 3, 4, 5, 6, 7];" class="row">
+			<div class="d-inline-block m-0 p-0">
+				<div class="row no-gutters">
+					<checkers-cell
+						*ngFor="let col of [0, 1, 2, 3, 4, 5, 6, 7];"
+						[position]="[row, col]"></checkers-cell>
+				</div>
+			</div>
+		</div>
+	</span>
 </div>
