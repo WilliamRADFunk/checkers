@@ -12,7 +12,5 @@ export class ManComponent implements OnInit {
 
 	constructor() { }
 
-	ngOnInit() {
-		console.log('ewewewewew', this.cell.player);
-	}
+	ngOnInit() { }
 }

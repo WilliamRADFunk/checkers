@@ -1,3 +1,15 @@
 .rotate {
     transform: rotate(180deg);
 }
+.black-team-color {
+    &.fa,
+    &.fa-arrow-circle-up {
+        color: #DD0066;
+    }
+}
+.white-team-color {
+    &.fa,
+    &.fa-arrow-circle-up {
+        color: #D3D3D3;
+    }
+}
