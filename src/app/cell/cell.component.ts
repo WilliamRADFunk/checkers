@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 export class CellComponent implements OnDestroy, OnInit {
 	@Input() cell: Cell;
 	gameOver: boolean;
+	highlighted: boolean = false;
 	isOnSquare: boolean;
 	subscriptions: Subscription[] = [];
 
@@ -27,10 +28,13 @@ export class CellComponent implements OnDestroy, OnInit {
 	cellClicked() { }
 
 	@HostListener('mouseover') onHover() {
-		console.log('mouseover');
+		console.log('mouseover', this.cell.player);
+		this.highlighted = true;
 	}
 
-	@HostListener('mouseleave') onLeave() {
+	@HostListener('mouseleave')
+	@HostListener('mouseout') onLeave() {
 		console.log('mouseleave');
+		this.highlighted = false;
 	}
 }
