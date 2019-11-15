@@ -1,6 +1,7 @@
 <div class="cell-size align-middle text-center"
 	[class.off-square]="!isOnSquare"
-	[class.on-square]="isOnSquare">
+  [class.on-square]="isOnSquare"
+  [class.hovered-cell]="highlighted">
 	<div class="font-weight-bold">
 		<checkers-man *ngIf="isOnSquare" [cell]="cell"></checkers-man>
 	</div>
