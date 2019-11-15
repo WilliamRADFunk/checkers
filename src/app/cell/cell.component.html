@@ -1,7 +1,7 @@
 <div class="cell-size align-middle text-center"
 	[class.off-square]="!isOnSquare"
 	[class.on-square]="isOnSquare">
-	<div class="font-weight-bold clue-text">
-		<checkers-man *ngIf="isOnSquare" [player]="cell.player"></checkers-man>
+	<div class="font-weight-bold">
+		<checkers-man *ngIf="isOnSquare" [cell]="cell"></checkers-man>
 	</div>
 </div>

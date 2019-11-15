@@ -27,7 +27,7 @@ export class CellComponent implements OnDestroy, OnInit {
 	cellClicked() { }
 
 	@HostListener('mouseover') onHover() {
-		console.log('mouseover');
+		console.log('mouseover', this.cell.player);
 	}
 
 	@HostListener('mouseleave') onLeave() {
