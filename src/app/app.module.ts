@@ -5,6 +5,8 @@ import { AppComponent } from './app.component';
 import { GameBoardComponent } from './game-board/game-board.component';
 import { CellComponent } from './cell/cell.component';
 import { ManComponent } from './man/man.component';
+import { MoveTrackerService } from './services/move-tracker.service';
+import { BoardStateService } from './services/board-state.service';
 
 @NgModule({
 	declarations: [
@@ -16,7 +18,7 @@ import { ManComponent } from './man/man.component';
 	imports: [
 		BrowserModule
 	],
-	providers: [],
-	bootstrap: [AppComponent]
+	providers: [ BoardStateService, MoveTrackerService ],
+	bootstrap: [ AppComponent ]
 })
 export class AppModule { }
