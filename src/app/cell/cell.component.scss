@@ -74,6 +74,14 @@
     background-color: #85BB65 !important;
 }
 
+.tracked-cell {
+    background-color: #FFDB58 !important;
+}
+
+.hovered-cell.tracked-cell {
+	background-color: #FF0000 !important;
+}
+
 .off-square {
 	background-color: #9B6435;
 }

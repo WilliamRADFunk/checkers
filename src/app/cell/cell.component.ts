@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit, HostListener } from '@angular/core
 import { Cell } from '../models/cell';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { MoveTrackerService } from '../services/move-tracker.service';
+import { BoardStateService } from '../services/board-state.service';
 
 @Component({
 	selector: 'checkers-cell',
@@ -17,8 +17,9 @@ export class CellComponent implements OnDestroy, OnInit {
 	id: number;
 	isOnSquare: boolean;
 	subscriptions: Subscription[] = [];
+	tracked: boolean = false;
 
-	constructor(private readonly moveTracker: MoveTrackerService) { }
+	constructor(private readonly boardStateService: BoardStateService) { }
 
 	ngOnDestroy() {
 		this.subscriptions.forEach(s => s && s.unsubscribe());
@@ -27,18 +28,31 @@ export class CellComponent implements OnDestroy, OnInit {
 
 	ngOnInit() {
 		this.subscriptions.push(
-			this.moveTracker.currClickableCells.pipe(filter(x => !!x)).subscribe((clickables: number[]) => {
+			this.boardStateService.currClickableCells.pipe(filter(x => !!x)).subscribe((clickables: number[]) => {
 				this.clickableCells = clickables;
+			}),
+			this.boardStateService.currMoveChainCells.pipe(filter(x => !!x)).subscribe((trackedCells: number[]) => {
+				this.tracked = false;
+				trackedCells.forEach(id => {
+					if (id === this.id) {
+						this.tracked = true;
+					}
+				});
 			})
 		);
 		this.isOnSquare = (this.cell.position[0] % 2) + (this.cell.position[1] % 2) === 1;
 		this.id = Number(`${this.cell.position[0]}${this.cell.position[1]}`);
 	}
 
-	cellClicked() { }
+	@HostListener('click') onClick() {
+		if (this.clickableCells.includes(this.id) || this.tracked) {
+			console.log('click', this.id);
+			this.boardStateService.cellClicked(this.cell);
+		}
+	}
 
 	@HostListener('mouseover') onHover() {
-		if (this.cell.player === 1 && this.cell.value && this.clickableCells.includes(this.id)) {
+		if (this.cell.player === this.boardStateService.getActivePlayer() && this.cell.value && this.clickableCells.includes(this.id)) {
 			this.highlighted = true;
 		}
 	}

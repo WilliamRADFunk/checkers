@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { Board } from '../models/board';
+import { Cell } from '../models/cell';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BoardStateService {
+  private _activePlayer: number = 1;
   private readonly _boardState: BehaviorSubject<Board> = new BehaviorSubject<Board>({
     cellStates: [
       [
@@ -410,9 +412,69 @@ export class BoardStateService {
       ],
     ]
   });
+  private _clickableCells: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
+  private _moveChainCells: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   currBoardState: Observable<Board> = this._boardState.asObservable();
+  currClickableCells: Observable<number[]> = this._clickableCells.asObservable();
+  currMoveChainCells: Observable<number[]> = this._moveChainCells.asObservable();
 
-  constructor() { }
+  private _moveChain: Cell[] = [];
+
+  constructor() {
+    this._clickableCells.next(this._findPiecesForPlayer());
+  }
+
+  _findClickableCells(): number[] {
+    if (this._activePlayer === 1) {
+
+    } else {
+
+    }
+    return [];
+  }
+
+  _findPiecesForPlayer(): number[] {
+    const cellStates = this._boardState.value.cellStates;
+    const clickableCells = [];
+    cellStates.forEach(row => {
+      row.forEach(cell => {
+        if (cell.player === this._activePlayer) {
+          clickableCells.push(Number(`${cell.position[0]}${cell.position[1]}`));
+        }
+      });
+    });
+    return clickableCells;
+  }
+
+  cellClicked(cell: Cell): void {
+    const chain = [];
+    const index = this._moveChain.indexOf(cell);
+    console.log('cellClicked', index);
+    if (!index) {
+      this._moveChain.length = 0;
+      this._moveChainCells.next([]);
+      this._clickableCells.next(this._findPiecesForPlayer());
+    } else if (index > 0) {
+      this._moveChain = this._moveChain.slice(0, index);
+      this._moveChain.forEach(c => {
+        chain.push(Number(`${c.position[0]}${c.position[1]}`));
+      });
+      this._moveChainCells.next(chain);
+      this._clickableCells.next(this._findClickableCells());
+    } else {
+      chain.push(...this._moveChainCells.value);
+      this._moveChain.push(cell);
+      this._moveChain.forEach(c => {
+        chain.push(Number(`${c.position[0]}${c.position[1]}`));
+      });
+      this._moveChainCells.next(chain);
+      this._clickableCells.next(this._findClickableCells());
+    }
+  }
+
+  getActivePlayer(): number {
+    return this._activePlayer;
+  }
 
   makeMove(row1: number, col1: number, row2: number, col2: number, cellsToEliminate: number[][]): void {
     const board = this._boardState.value;
@@ -427,5 +489,8 @@ export class BoardStateService {
     cellStateAfter.player = cellStateBefore.player;
     cellStateAfter.value = cellStateBefore.value;
     cellStateAfter.playerColor = cellStateBefore.playerColor;
+
+    this._activePlayer = this._activePlayer === 1 ? 2 : 1;
+    this._clickableCells.next(this._findPiecesForPlayer());
   }
 }
