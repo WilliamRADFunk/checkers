@@ -11,7 +11,7 @@ import { BoardStateService } from '../services/board-state.service';
 })
 export class CellComponent implements OnDestroy, OnInit {
 	@Input() cell: Cell;
-	clickableCells: number[] = []
+	clickableCells: number[] = [];
 	gameOver: boolean;
 	highlighted: boolean = false;
 	id: number;
