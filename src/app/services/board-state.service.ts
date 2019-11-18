@@ -427,24 +427,61 @@ export class BoardStateService {
 
 	_findClickableCells(): number[] {
 		if (this._activePlayer.value === 1) {
-
-		} else {
-
+			return this._findClickableCellsUpward();
 		}
-		return [];
+		return this._findClickableCellsDownward();
 	}
 
-	_findPiecesForPlayer(): number[] {
+	_findClickableCellsDownward(): number[] {
+		const board = this._boardState.value.cellStates;
+		if (!this._moveChain.length) {
+			const playerPieces = this._findPiecesForPlayer();
+			playerPieces.filter(cell => {
+				const lowerLeft = [cell.position[0] + 1, cell.position[1] - 1];
+				const lowerRight = [cell.position[0] + 1, cell.position[1] - 1];
+				if (lowerLeft[0] <= 7 && lowerLeft[1] >= 0) {
+					if (!board[lowerLeft[0]][lowerLeft[1]].value) {
+						return true;
+					} else if (board[lowerLeft[0]][lowerLeft[1]].player !== this._activePlayer.value) {
+						const jumpedLowerLeft = [lowerLeft[0] + 1, lowerLeft[1] - 1];
+						if (jumpedLowerLeft[0] <= 7 && jumpedLowerLeft[1] >= 0 && !board[jumpedLowerLeft[0]][jumpedLowerLeft[1]].value) {
+							return true;
+						}
+					}
+				} else if (lowerRight[0] <= 7 && lowerRight[1] <= 7) {
+					if (!board[lowerRight[0]][lowerRight[1]].value) {
+						return true;
+					} else if (board[lowerRight[0]][lowerRight[1]].player !== this._activePlayer.value) {
+						const jumpedlowerRight = [lowerRight[0] + 1, lowerRight[1] + 1];
+						if (jumpedlowerRight[0] <= 7 && jumpedlowerRight[1] <= 7 && !board[jumpedlowerRight[0]][jumpedlowerRight[1]].value) {
+							return true;
+						}
+					}
+				}
+			});
+			const ids = [];
+			playerPieces.forEach(cell => {
+				ids.push(Number(`${cell.position[0]}${cell.position[1]}`));
+			});
+			return ids;
+		}
+	}
+
+	_findClickableCellsUpward(): number[] {
+
+	}
+
+	_findPiecesForPlayer(): Cell[] {
 		const cellStates = this._boardState.value.cellStates;
-		const clickableCells = [];
+		const playerPieces = [];
 		cellStates.forEach(row => {
 			row.forEach(cell => {
 				if (cell.player === this._activePlayer.value) {
-					clickableCells.push(Number(`${cell.position[0]}${cell.position[1]}`));
+					playerPieces.push(cell);
 				}
 			});
 		});
-		return clickableCells;
+		return playerPieces;
 	}
 
 	cellClicked(cell: Cell): void {
