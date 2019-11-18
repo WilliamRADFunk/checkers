@@ -422,8 +422,59 @@ export class BoardStateService {
 	private _moveChain: Cell[] = [];
 
 	constructor() {
-		this._clickableCells.next(this._findPiecesForPlayer());
-	}
+		this._clickableCells.next(this._findClickableCellsUpward());
+  }
+  
+  _downwardPathValidCheck(cell: Cell, board: Cell[][]): boolean {
+    const lowerLeft = [cell.position[0] + 1, cell.position[1] - 1];
+    const lowerRight = [cell.position[0] + 1, cell.position[1] - 1];
+    if (lowerLeft[0] <= 7 && lowerLeft[1] >= 0) {
+      if (!board[lowerLeft[0]][lowerLeft[1]].value) {
+        return true;
+      } else if (board[lowerLeft[0]][lowerLeft[1]].player !== this._activePlayer.value) {
+        const jumpedLowerLeft = [lowerLeft[0] + 1, lowerLeft[1] - 1];
+        if (jumpedLowerLeft[0] <= 7 && jumpedLowerLeft[1] >= 0 && !board[jumpedLowerLeft[0]][jumpedLowerLeft[1]].value) {
+          return true;
+        }
+      }
+    } else if (lowerRight[0] <= 7 && lowerRight[1] <= 7) {
+      if (!board[lowerRight[0]][lowerRight[1]].value) {
+        return true;
+      } else if (board[lowerRight[0]][lowerRight[1]].player !== this._activePlayer.value) {
+        const jumpedlowerRight = [lowerRight[0] + 1, lowerRight[1] + 1];
+        if (jumpedlowerRight[0] <= 7 && jumpedlowerRight[1] <= 7 && !board[jumpedlowerRight[0]][jumpedlowerRight[1]].value) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  
+  _downwardPathValidOptions(cell: Cell, board: Cell[][]): number[] {
+    const ids = [];
+    const lowerLeft = [cell.position[0] + 1, cell.position[1] - 1];
+    const lowerRight = [cell.position[0] + 1, cell.position[1] - 1];
+    if (lowerLeft[0] <= 7 && lowerLeft[1] >= 0) {
+      if (!board[lowerLeft[0]][lowerLeft[1]].value) {
+        ids.push(board[lowerLeft[0]][lowerLeft[1]]);
+      } else if (board[lowerLeft[0]][lowerLeft[1]].player !== this._activePlayer.value) {
+        const jumpedLowerLeft = [lowerLeft[0] + 1, lowerLeft[1] - 1];
+        if (jumpedLowerLeft[0] <= 7 && jumpedLowerLeft[1] >= 0 && !board[jumpedLowerLeft[0]][jumpedLowerLeft[1]].value) {
+          ids.push(board[jumpedLowerLeft[0]][jumpedLowerLeft[1]]);
+        }
+      }
+    } else if (lowerRight[0] <= 7 && lowerRight[1] <= 7) {
+      if (!board[lowerRight[0]][lowerRight[1]].value) {
+        ids.push(board[lowerRight[0]][lowerRight[1]]);
+      } else if (board[lowerRight[0]][lowerRight[1]].player !== this._activePlayer.value) {
+        const jumpedlowerRight = [lowerRight[0] + 1, lowerRight[1] + 1];
+        if (jumpedlowerRight[0] <= 7 && jumpedlowerRight[1] <= 7 && !board[jumpedlowerRight[0]][jumpedlowerRight[1]].value) {
+          ids.push(board[jumpedlowerRight[0]][jumpedlowerRight[1]]);
+        }
+      }
+    }
+    return ids.map(c => Number(`${c.position[0]}${c.position[1]}`));
+  }
 
 	_findClickableCells(): number[] {
 		if (this._activePlayer.value === 1) {
@@ -437,38 +488,31 @@ export class BoardStateService {
 		if (!this._moveChain.length) {
 			const playerPieces = this._findPiecesForPlayer();
 			playerPieces.filter(cell => {
-				const lowerLeft = [cell.position[0] + 1, cell.position[1] - 1];
-				const lowerRight = [cell.position[0] + 1, cell.position[1] - 1];
-				if (lowerLeft[0] <= 7 && lowerLeft[1] >= 0) {
-					if (!board[lowerLeft[0]][lowerLeft[1]].value) {
-						return true;
-					} else if (board[lowerLeft[0]][lowerLeft[1]].player !== this._activePlayer.value) {
-						const jumpedLowerLeft = [lowerLeft[0] + 1, lowerLeft[1] - 1];
-						if (jumpedLowerLeft[0] <= 7 && jumpedLowerLeft[1] >= 0 && !board[jumpedLowerLeft[0]][jumpedLowerLeft[1]].value) {
-							return true;
-						}
-					}
-				} else if (lowerRight[0] <= 7 && lowerRight[1] <= 7) {
-					if (!board[lowerRight[0]][lowerRight[1]].value) {
-						return true;
-					} else if (board[lowerRight[0]][lowerRight[1]].player !== this._activePlayer.value) {
-						const jumpedlowerRight = [lowerRight[0] + 1, lowerRight[1] + 1];
-						if (jumpedlowerRight[0] <= 7 && jumpedlowerRight[1] <= 7 && !board[jumpedlowerRight[0]][jumpedlowerRight[1]].value) {
-							return true;
-						}
-					}
-				}
+				return this._downwardPathValidCheck(cell, board);
 			});
 			const ids = [];
 			playerPieces.forEach(cell => {
 				ids.push(Number(`${cell.position[0]}${cell.position[1]}`));
 			});
 			return ids;
-		}
+    }
+    return this._downwardPathValidOptions(this._moveChain[this._moveChain.length - 1], board);
 	}
 
 	_findClickableCellsUpward(): number[] {
-
+    const board = this._boardState.value.cellStates;
+		if (!this._moveChain.length) {
+			const playerPieces = this._findPiecesForPlayer();
+			playerPieces.filter(cell => {
+				return this._upwardPathValidOptions(cell, board);
+			});
+			const ids = [];
+			playerPieces.forEach(cell => {
+				ids.push(Number(`${cell.position[0]}${cell.position[1]}`));
+			});
+			return ids;
+    }
+    return this._upwardPathValidOptions(this._moveChain[this._moveChain.length - 1], board);
 	}
 
 	_findPiecesForPlayer(): Cell[] {
@@ -482,7 +526,58 @@ export class BoardStateService {
 			});
 		});
 		return playerPieces;
-	}
+  }
+
+  _upperPathValidCheck(cell: Cell, board: Cell[][]): boolean {
+    const upperLeft = [cell.position[0] - 1, cell.position[1] - 1];
+    const upperRight = [cell.position[0] - 1, cell.position[1] - 1];
+    if (upperLeft[0] >= 0 && upperLeft[1] >= 0) {
+      if (!board[upperLeft[0]][upperLeft[1]].value) {
+        return true;
+      } else if (board[upperLeft[0]][upperLeft[1]].player !== this._activePlayer.value) {
+        const jumpedUpperLeft = [upperLeft[0] - 1, upperLeft[1] - 1];
+        if (jumpedUpperLeft[0] >= 0 && jumpedUpperLeft[1] >= 0 && !board[jumpedUpperLeft[0]][jumpedUpperLeft[1]].value) {
+          return true;
+        }
+      }
+    } else if (upperRight[0] >= 0 && upperRight[1] <= 7) {
+      if (!board[upperRight[0]][upperRight[1]].value) {
+        return true;
+      } else if (board[upperRight[0]][upperRight[1]].player !== this._activePlayer.value) {
+        const jumpedUpperRight = [upperRight[0] - 1, upperRight[1] + 1];
+        if (jumpedUpperRight[0] >= 0 && jumpedUpperRight[1] <= 7 && !board[jumpedUpperRight[0]][jumpedUpperRight[1]].value) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  
+  _upwardPathValidOptions(cell: Cell, board: Cell[][]): number[] {
+    const ids = [];
+    const upperLeft = [cell.position[0] - 1, cell.position[1] - 1];
+    const upperRight = [cell.position[0] - 1, cell.position[1] - 1];
+    if (upperLeft[0] >= 0 && upperLeft[1] >= 0) {
+      if (!board[upperLeft[0]][upperLeft[1]].value) {
+        ids.push(board[upperLeft[0]][upperLeft[1]]);
+      } else if (board[upperLeft[0]][upperLeft[1]].player !== this._activePlayer.value) {
+        const jumpedUpperLeft = [upperLeft[0] - 1, upperLeft[1] - 1];
+        if (jumpedUpperLeft[0] >= 0 && jumpedUpperLeft[1] >= 0 && !board[jumpedUpperLeft[0]][jumpedUpperLeft[1]].value) {
+          ids.push(board[jumpedUpperLeft[0]][jumpedUpperLeft[1]]);
+        }
+      }
+    } else if (upperRight[0] >= 0 && upperRight[1] <= 7) {
+      if (!board[upperRight[0]][upperRight[1]].value) {
+        ids.push(board[upperRight[0]][upperRight[1]]);
+      } else if (board[upperRight[0]][upperRight[1]].player !== this._activePlayer.value) {
+        const jumpedUpperRight = [upperRight[0] - 1, upperRight[1] + 1];
+        if (jumpedUpperRight[0] >= 0 && jumpedUpperRight[1] <= 7 && !board[jumpedUpperRight[0]][jumpedUpperRight[1]].value) {
+          ids.push(board[jumpedUpperRight[0]][jumpedUpperRight[1]]);
+        }
+      }
+    }
+    return ids.map(c => Number(`${c.position[0]}${c.position[1]}`));
+  }
 
 	cellClicked(cell: Cell): void {
 		const chain = [];
