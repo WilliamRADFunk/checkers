@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -10,7 +10,7 @@ import { BoardStateService } from '../services/board-state.service';
 	templateUrl: './game-board.component.html',
 	styleUrls: ['./game-board.component.scss']
 })
-export class GameBoardComponent implements OnDestroy, OnChanges, OnInit {
+export class GameBoardComponent implements OnDestroy, OnInit {
 	public board: Board;
 	public gameOver: boolean;
 	public isLoading: boolean = true;
@@ -24,19 +24,10 @@ export class GameBoardComponent implements OnDestroy, OnChanges, OnInit {
 	}
 
 	ngOnInit() {
-		this._boardStateService.currBoardState.pipe(filter(x => !!x)).subscribe(bs => {
-			this.board = bs;
-		})
-	}
-
-	ngOnChanges(e: SimpleChanges) {
-		if (e.board && e.board.currentValue) {
-			setTimeout(() => {
-				this.board = e.board.currentValue;
-				this.isLoading = false;
-			}, 0);
-		} else if (e.board && !e.board.currentValue) {
-			this.isLoading = true;
-		}
+		this.subscriptions.push(
+			this._boardStateService.currBoardState.pipe(filter(x => !!x)).subscribe(bs => {
+				this.board = bs;
+			}),
+		);
 	}
 }

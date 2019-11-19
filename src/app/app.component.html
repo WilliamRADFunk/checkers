@@ -2,10 +2,20 @@
 	<div class="d-flex justify-content-center">
 		<div class="col-2"></div>
 		<div class="col-8 text-center mt-2">
-      <span class="h1 d-block d-sm-inline-block mb-2 mb-sm-0">Checkers</span><br/>
-      <span class="h2 d-block d-sm-inline-block mb-2 mb-sm-0">Player {{ activePlayer }}</span>
+			<span class="h1 d-block d-sm-inline-block mb-2 mb-sm-0">Checkers</span><br/>
 		</div>
 		<div class="col-2"></div>
+	</div>
+	<div class="row no-gutters mt-3">
+		<div class="col-4"></div>
+		<div class="col-4">
+			<span class="h2 d-inline-block mb-2 mb-sm-0">Player {{ activePlayer }}</span>
+			<button
+				*ngIf="canSubmitMove"
+				(click)="submitMove()"
+				class="btn btn-success btn-sm pull-right">Confirm</button>
+		</div>
+		<div class="col-4"></div>
 	</div>
 	<div class="row no-gutters mt-3">
 		<div class="col-4"></div>

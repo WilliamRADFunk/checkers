@@ -10,16 +10,24 @@ import { BoardStateService } from './services/board-state.service';
 	styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-	activePlayer: number;
 	private subscriptions: Subscription[] = [];
+	public activePlayer: number;
+	public canSubmitMove: boolean = false;
 
-	constructor(private readonly boardStateService: BoardStateService) {}
+	constructor(private readonly _boardStateService: BoardStateService) {}
 
 	ngOnInit() {
 		this.subscriptions.push(
-			this.boardStateService.currActivePlayer.pipe(filter(x => !!x)).subscribe((ap: number) => {
+			this._boardStateService.currActivePlayer.pipe(filter(x => !!x)).subscribe((ap: number) => {
 				this.activePlayer = ap;
+			}),
+			this._boardStateService.readyToSubmit.subscribe(submittable => {
+				this.canSubmitMove = submittable;
 			})
 		);
+	}
+
+	submitMove() {
+		this._boardStateService.makeMoves();
 	}
 }

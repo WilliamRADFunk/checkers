@@ -46,13 +46,12 @@ export class CellComponent implements OnDestroy, OnInit {
 
 	@HostListener('click') onClick() {
 		if (this.clickableCells.includes(this.id) || this.tracked) {
-			console.log('click', this.id);
 			this.boardStateService.cellClicked(this.cell);
 		}
 	}
 
 	@HostListener('mouseover') onHover() {
-		if (this.cell.player === this.boardStateService.getActivePlayer() && this.cell.value && this.clickableCells.includes(this.id)) {
+		if (this.clickableCells.includes(this.id)) {
 			this.highlighted = true;
 		}
 	}
