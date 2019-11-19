@@ -32,7 +32,6 @@ export class CellComponent implements OnDestroy, OnInit {
 				this.clickableCells = clickables;
 			}),
 			this.boardStateService.currMoveChainIds.pipe(filter(x => !!x)).subscribe((trackedCells: number[]) => {
-				console.log('trackedCells', trackedCells);
 				this.tracked = false;
 				trackedCells.forEach(id => {
 					if (id === this.id) {
@@ -52,7 +51,7 @@ export class CellComponent implements OnDestroy, OnInit {
 	}
 
 	@HostListener('mouseover') onHover() {
-		if (this.clickableCells.includes(this.id)) {
+		if (this.clickableCells.includes(this.id) || this.tracked) {
 			this.highlighted = true;
 		}
 	}

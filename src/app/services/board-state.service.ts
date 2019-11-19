@@ -421,7 +421,7 @@ export class BoardStateService {
 	readonly currMoveChainIds: Observable<number[]> = this._moveChainIds.asObservable();
 	readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
 
-	private _moveChain: Cell[] = [];
+	private _moveChainCells: Cell[] = [];
 
 	constructor() {
 		this._clickableCellIds.next(this._findClickableCells());
@@ -489,7 +489,7 @@ export class BoardStateService {
 
 	_findClickableCellsDownward(): number[] {
 		const board = this._boardState.value.cellStates;
-		if (!this._moveChain.length) {
+		if (!this._moveChainCells.length) {
 			let playerPieces = this._findPiecesForPlayer();
 			playerPieces = playerPieces.filter(cell => {
 				return this._downwardPathValidCheck(cell, board);
@@ -500,12 +500,12 @@ export class BoardStateService {
 			});
 			return ids;
 		}
-		return this._downwardPathValidOptions(this._moveChain[this._moveChain.length - 1], board);
+		return this._downwardPathValidOptions(this._moveChainCells[this._moveChainCells.length - 1], board);
 	}
 
 	_findClickableCellsUpward(): number[] {
 		const board = this._boardState.value.cellStates;
-		if (!this._moveChain.length) {
+		if (!this._moveChainCells.length) {
 			let playerPieces = this._findPiecesForPlayer();
 			playerPieces = playerPieces.filter(cell => {
 				return this._upperPathValidCheck(cell, board);
@@ -516,7 +516,7 @@ export class BoardStateService {
 			});
 			return ids;
 		}
-		return this._upwardPathValidOptions(this._moveChain[this._moveChain.length - 1], board);
+		return this._upwardPathValidOptions(this._moveChainCells[this._moveChainCells.length - 1], board);
 	}
 
 	_findPiecesForPlayer(): Cell[] {
@@ -607,20 +607,19 @@ export class BoardStateService {
 
 	cellClicked(cell: Cell): void {
 		const chain = [];
-		const index = this._moveChain.indexOf(cell);
+		const index = this._moveChainCells.indexOf(cell);
 		if (!index) {
-			this._moveChain.length = 0;
+			this._moveChainCells.length = 0;
 			this._moveChainIds.next([]);
 		} else if (index > 0) {
-			this._moveChain = this._moveChain.slice(0, index);
-			this._moveChain.forEach(c => {
+			this._moveChainCells = this._moveChainCells.slice(0, index);
+			this._moveChainCells.forEach(c => {
 				chain.push(Number(`${c.position[0]}${c.position[1]}`));
 			});
 			this._moveChainIds.next(chain);
 		} else {
-			chain.push(...this._moveChainIds.value);
-			this._moveChain.push(cell);
-			this._moveChain.forEach(c => {
+			this._moveChainCells.push(cell);
+			this._moveChainCells.forEach(c => {
 				chain.push(Number(`${c.position[0]}${c.position[1]}`));
 			});
 			this._moveChainIds.next(chain);
@@ -648,17 +647,17 @@ export class BoardStateService {
 	makeMoves(): void {
 		this._readyToSubmit.next(false);
 		let idChain = this._moveChainIds.value;
-		let cellChain = this._moveChain;
+		let cellChain = this._moveChainCells;
     let chainLength = idChain.length;
-    console.log('makeMoves', this._moveChainIds.value, this._moveChain[chainLength - 2],  this._moveChain[chainLength - 1]);
 		while (chainLength >= 2) {
-			if (Math.abs(idChain[chainLength - 2] - idChain[chainLength - 1]) < 10) {
+			if (Math.abs(Math.floor(idChain[0] / 10) - Math.floor(idChain[1] / 10)) < 2) {
 				this._makeMove(cellChain[0].position[0], cellChain[0].position[1], cellChain[1].position[0], cellChain[1].position[1], []);
 			} else {
-				const lowerNum = idChain[chainLength - 2] < idChain[chainLength - 1] ? idChain[chainLength - 2] : idChain[chainLength - 1];
-				const eliminatedCellId = lowerNum + (Math.abs(idChain[chainLength - 2] - idChain[chainLength - 1]) / 2);
+        const lowerNum = idChain[0] < idChain[1] ? idChain[0] : idChain[1];
+        const diff = Math.abs(idChain[0] - idChain[1]);
+				const eliminatedCellId = lowerNum + Math.floor(diff / 2) + (diff % 2);
 				const row = Math.floor(eliminatedCellId / 10);
-				const col = eliminatedCellId % 10;
+        const col = eliminatedCellId % 10;
 				const pos = this._boardState.value.cellStates[row][col].position;
 				this._makeMove(
 					cellChain[0].position[0],
@@ -667,14 +666,14 @@ export class BoardStateService {
 					cellChain[1].position[1],
 					[pos[0], pos[1]]);
 			}
-			this._moveChain.shift();
+			this._moveChainCells.shift();
 			this._moveChainIds.next(this._moveChainIds.value.slice(1));
 
 			idChain = this._moveChainIds.value;
-			cellChain = this._moveChain;
+			cellChain = this._moveChainCells;
 			chainLength = idChain.length;
 		}
-		this._moveChain.length = 0;
+		this._moveChainCells.length = 0;
 		this._moveChainIds.next([]);
 
 		this._activePlayer.next(this._activePlayer.value === 1 ? 2 : 1);
