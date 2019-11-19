@@ -412,73 +412,73 @@ export class BoardStateService {
 			],
 		]
 	});
-	private readonly _clickableCells: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
+	private readonly _clickableCellIds: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
 	private readonly _readyToSubmit: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 	private readonly _moveChainIds: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
 	readonly currActivePlayer: Observable<number> = this._activePlayer.asObservable();
 	readonly currBoardState: Observable<Board> = this._boardState.asObservable();
-	readonly currClickableCells: Observable<number[]> = this._clickableCells.asObservable();
-	readonly currMoveChainCells: Observable<number[]> = this._moveChainIds.asObservable();
+	readonly currClickableCellIds: Observable<number[]> = this._clickableCellIds.asObservable();
+	readonly currMoveChainIds: Observable<number[]> = this._moveChainIds.asObservable();
 	readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
 
 	private _moveChain: Cell[] = [];
 
 	constructor() {
-		this._clickableCells.next(this._findClickableCells());
-  }
-  
-  _downwardPathValidCheck(cell: Cell, board: Cell[][]): boolean {
-    const lowerLeft = [cell.position[0] + 1, cell.position[1] - 1];
-    const lowerRight = [cell.position[0] + 1, cell.position[1] + 1];
-    if (lowerLeft[0] <= 7 && lowerLeft[1] >= 0) {
-      if (!board[lowerLeft[0]][lowerLeft[1]].value) {
-        return true;
-      } else if (board[lowerLeft[0]][lowerLeft[1]].player !== this._activePlayer.value) {
-        const jumpedLowerLeft = [lowerLeft[0] + 1, lowerLeft[1] - 1];
-        if (jumpedLowerLeft[0] <= 7 && jumpedLowerLeft[1] >= 0 && !board[jumpedLowerLeft[0]][jumpedLowerLeft[1]].value) {
-          return true;
-        }
-      }
-    }
-    if (lowerRight[0] <= 7 && lowerRight[1] <= 7) {
-      if (!board[lowerRight[0]][lowerRight[1]].value) {
-        return true;
-      } else if (board[lowerRight[0]][lowerRight[1]].player !== this._activePlayer.value) {
-        const jumpedlowerRight = [lowerRight[0] + 1, lowerRight[1] + 1];
-        if (jumpedlowerRight[0] <= 7 && jumpedlowerRight[1] <= 7 && !board[jumpedlowerRight[0]][jumpedlowerRight[1]].value) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-  
-  _downwardPathValidOptions(cell: Cell, board: Cell[][]): number[] {
-    const ids = [];
-    const lowerLeft = [cell.position[0] + 1, cell.position[1] - 1];
-    const lowerRight = [cell.position[0] + 1, cell.position[1] + 1];
-    if (lowerLeft[0] <= 7 && lowerLeft[1] >= 0) {
-      if (!board[lowerLeft[0]][lowerLeft[1]].value) {
-        ids.push(board[lowerLeft[0]][lowerLeft[1]]);
-      } else if (board[lowerLeft[0]][lowerLeft[1]].player !== this._activePlayer.value) {
-        const jumpedLowerLeft = [lowerLeft[0] + 1, lowerLeft[1] - 1];
-        if (jumpedLowerLeft[0] <= 7 && jumpedLowerLeft[1] >= 0 && !board[jumpedLowerLeft[0]][jumpedLowerLeft[1]].value) {
-          ids.push(board[jumpedLowerLeft[0]][jumpedLowerLeft[1]]);
-        }
-      }
-    }
-    if (lowerRight[0] <= 7 && lowerRight[1] <= 7) {
-      if (!board[lowerRight[0]][lowerRight[1]].value) {
-        ids.push(board[lowerRight[0]][lowerRight[1]]);
-      } else if (board[lowerRight[0]][lowerRight[1]].player !== this._activePlayer.value) {
-        const jumpedlowerRight = [lowerRight[0] + 1, lowerRight[1] + 1];
-        if (jumpedlowerRight[0] <= 7 && jumpedlowerRight[1] <= 7 && !board[jumpedlowerRight[0]][jumpedlowerRight[1]].value) {
-          ids.push(board[jumpedlowerRight[0]][jumpedlowerRight[1]]);
-        }
-      }
-    }
-    return ids.map(c => Number(`${c.position[0]}${c.position[1]}`));
-  }
+		this._clickableCellIds.next(this._findClickableCells());
+	}
+
+	_downwardPathValidCheck(cell: Cell, board: Cell[][]): boolean {
+		const lowerLeft = [cell.position[0] + 1, cell.position[1] - 1];
+		const lowerRight = [cell.position[0] + 1, cell.position[1] + 1];
+		if (lowerLeft[0] <= 7 && lowerLeft[1] >= 0) {
+			if (!board[lowerLeft[0]][lowerLeft[1]].value) {
+				return true;
+			} else if (board[lowerLeft[0]][lowerLeft[1]].player !== this._activePlayer.value) {
+				const jumpedLowerLeft = [lowerLeft[0] + 1, lowerLeft[1] - 1];
+				if (jumpedLowerLeft[0] <= 7 && jumpedLowerLeft[1] >= 0 && !board[jumpedLowerLeft[0]][jumpedLowerLeft[1]].value) {
+					return true;
+				}
+			}
+		}
+		if (lowerRight[0] <= 7 && lowerRight[1] <= 7) {
+			if (!board[lowerRight[0]][lowerRight[1]].value) {
+				return true;
+			} else if (board[lowerRight[0]][lowerRight[1]].player !== this._activePlayer.value) {
+				const jumpedlowerRight = [lowerRight[0] + 1, lowerRight[1] + 1];
+				if (jumpedlowerRight[0] <= 7 && jumpedlowerRight[1] <= 7 && !board[jumpedlowerRight[0]][jumpedlowerRight[1]].value) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	_downwardPathValidOptions(cell: Cell, board: Cell[][]): number[] {
+		const ids = [];
+		const lowerLeft = [cell.position[0] + 1, cell.position[1] - 1];
+		const lowerRight = [cell.position[0] + 1, cell.position[1] + 1];
+		if (lowerLeft[0] <= 7 && lowerLeft[1] >= 0) {
+			if (!board[lowerLeft[0]][lowerLeft[1]].value) {
+				ids.push(board[lowerLeft[0]][lowerLeft[1]]);
+			} else if (board[lowerLeft[0]][lowerLeft[1]].player !== this._activePlayer.value) {
+				const jumpedLowerLeft = [lowerLeft[0] + 1, lowerLeft[1] - 1];
+				if (jumpedLowerLeft[0] <= 7 && jumpedLowerLeft[1] >= 0 && !board[jumpedLowerLeft[0]][jumpedLowerLeft[1]].value) {
+					ids.push(board[jumpedLowerLeft[0]][jumpedLowerLeft[1]]);
+				}
+			}
+		}
+		if (lowerRight[0] <= 7 && lowerRight[1] <= 7) {
+			if (!board[lowerRight[0]][lowerRight[1]].value) {
+				ids.push(board[lowerRight[0]][lowerRight[1]]);
+			} else if (board[lowerRight[0]][lowerRight[1]].player !== this._activePlayer.value) {
+				const jumpedlowerRight = [lowerRight[0] + 1, lowerRight[1] + 1];
+				if (jumpedlowerRight[0] <= 7 && jumpedlowerRight[1] <= 7 && !board[jumpedlowerRight[0]][jumpedlowerRight[1]].value) {
+					ids.push(board[jumpedlowerRight[0]][jumpedlowerRight[1]]);
+				}
+			}
+		}
+		return ids.map(c => Number(`${c.position[0]}${c.position[1]}`));
+	}
 
 	_findClickableCells(): number[] {
 		if (this._activePlayer.value === 1) {
@@ -499,12 +499,12 @@ export class BoardStateService {
 				ids.push(Number(`${cell.position[0]}${cell.position[1]}`));
 			});
 			return ids;
-    }
-    return this._downwardPathValidOptions(this._moveChain[this._moveChain.length - 1], board);
+		}
+		return this._downwardPathValidOptions(this._moveChain[this._moveChain.length - 1], board);
 	}
 
 	_findClickableCellsUpward(): number[] {
-    const board = this._boardState.value.cellStates;
+		const board = this._boardState.value.cellStates;
 		if (!this._moveChain.length) {
 			let playerPieces = this._findPiecesForPlayer();
 			playerPieces = playerPieces.filter(cell => {
@@ -515,8 +515,8 @@ export class BoardStateService {
 				ids.push(Number(`${cell.position[0]}${cell.position[1]}`));
 			});
 			return ids;
-    }
-    return this._upwardPathValidOptions(this._moveChain[this._moveChain.length - 1], board);
+		}
+		return this._upwardPathValidOptions(this._moveChain[this._moveChain.length - 1], board);
 	}
 
 	_findPiecesForPlayer(): Cell[] {
@@ -530,7 +530,7 @@ export class BoardStateService {
 			});
 		});
 		return playerPieces;
-  }
+	}
 
 	_makeMove(row1: number, col1: number, row2: number, col2: number, cellToEliminate: number[]): void {
 		const board = this._boardState.value;
@@ -541,69 +541,69 @@ export class BoardStateService {
 			cellState.playerColor = '';
 		}
 		const cellStateBefore = board.cellStates[row1][col1];
-    const cellStateAfter = board.cellStates[row2][col2];
+		const cellStateAfter = board.cellStates[row2][col2];
 
 		cellStateAfter.player = cellStateBefore.player;
 		cellStateAfter.value = cellStateBefore.value;
-    cellStateAfter.playerColor = cellStateBefore.playerColor;
+		cellStateAfter.playerColor = cellStateBefore.playerColor;
 
-    cellStateBefore.player = 0;
+		cellStateBefore.player = 0;
 		cellStateBefore.value = 0;
-    cellStateBefore.playerColor = '';
+		cellStateBefore.playerColor = '';
 	}
 
-  _upperPathValidCheck(cell: Cell, board: Cell[][]): boolean {
-    const upperLeft = [cell.position[0] - 1, cell.position[1] - 1];
-    const upperRight = [cell.position[0] - 1, cell.position[1] + 1];
-    if (upperLeft[0] >= 0 && upperLeft[1] >= 0) {
-      if (!board[upperLeft[0]][upperLeft[1]].value) {
-        return true;
-      } else if (board[upperLeft[0]][upperLeft[1]].player !== this._activePlayer.value) {
-        const jumpedUpperLeft = [upperLeft[0] - 1, upperLeft[1] - 1];
-        if (jumpedUpperLeft[0] >= 0 && jumpedUpperLeft[1] >= 0 && !board[jumpedUpperLeft[0]][jumpedUpperLeft[1]].value) {
-          return true;
-        }
-      }
-    }
-    if (upperRight[0] >= 0 && upperRight[1] <= 7) {
-      if (!board[upperRight[0]][upperRight[1]].value) {
-        return true;
-      } else if (board[upperRight[0]][upperRight[1]].player !== this._activePlayer.value) {
-        const jumpedUpperRight = [upperRight[0] - 1, upperRight[1] + 1];
-        if (jumpedUpperRight[0] >= 0 && jumpedUpperRight[1] <= 7 && !board[jumpedUpperRight[0]][jumpedUpperRight[1]].value) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-  
-  _upwardPathValidOptions(cell: Cell, board: Cell[][]): number[] {
-    const ids = [];
-    const upperLeft = [cell.position[0] - 1, cell.position[1] - 1];
-    const upperRight = [cell.position[0] - 1, cell.position[1] + 1];
-    if (upperLeft[0] >= 0 && upperLeft[1] >= 0) {
-      if (!board[upperLeft[0]][upperLeft[1]].value) {
-        ids.push(board[upperLeft[0]][upperLeft[1]]);
-      } else if (board[upperLeft[0]][upperLeft[1]].player !== this._activePlayer.value) {
-        const jumpedUpperLeft = [upperLeft[0] - 1, upperLeft[1] - 1];
-        if (jumpedUpperLeft[0] >= 0 && jumpedUpperLeft[1] >= 0 && !board[jumpedUpperLeft[0]][jumpedUpperLeft[1]].value) {
-          ids.push(board[jumpedUpperLeft[0]][jumpedUpperLeft[1]]);
-        }
-      }
-    }
-    if (upperRight[0] >= 0 && upperRight[1] <= 7) {
-      if (!board[upperRight[0]][upperRight[1]].value) {
-        ids.push(board[upperRight[0]][upperRight[1]]);
-      } else if (board[upperRight[0]][upperRight[1]].player !== this._activePlayer.value) {
-        const jumpedUpperRight = [upperRight[0] - 1, upperRight[1] + 1];
-        if (jumpedUpperRight[0] >= 0 && jumpedUpperRight[1] <= 7 && !board[jumpedUpperRight[0]][jumpedUpperRight[1]].value) {
-          ids.push(board[jumpedUpperRight[0]][jumpedUpperRight[1]]);
-        }
-      }
-    }
-    return ids.map(c => Number(`${c.position[0]}${c.position[1]}`));
-  }
+	_upperPathValidCheck(cell: Cell, board: Cell[][]): boolean {
+		const upperLeft = [cell.position[0] - 1, cell.position[1] - 1];
+		const upperRight = [cell.position[0] - 1, cell.position[1] + 1];
+		if (upperLeft[0] >= 0 && upperLeft[1] >= 0) {
+			if (!board[upperLeft[0]][upperLeft[1]].value) {
+				return true;
+			} else if (board[upperLeft[0]][upperLeft[1]].player !== this._activePlayer.value) {
+				const jumpedUpperLeft = [upperLeft[0] - 1, upperLeft[1] - 1];
+				if (jumpedUpperLeft[0] >= 0 && jumpedUpperLeft[1] >= 0 && !board[jumpedUpperLeft[0]][jumpedUpperLeft[1]].value) {
+					return true;
+				}
+			}
+		}
+		if (upperRight[0] >= 0 && upperRight[1] <= 7) {
+			if (!board[upperRight[0]][upperRight[1]].value) {
+				return true;
+			} else if (board[upperRight[0]][upperRight[1]].player !== this._activePlayer.value) {
+				const jumpedUpperRight = [upperRight[0] - 1, upperRight[1] + 1];
+				if (jumpedUpperRight[0] >= 0 && jumpedUpperRight[1] <= 7 && !board[jumpedUpperRight[0]][jumpedUpperRight[1]].value) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	_upwardPathValidOptions(cell: Cell, board: Cell[][]): number[] {
+		const ids = [];
+		const upperLeft = [cell.position[0] - 1, cell.position[1] - 1];
+		const upperRight = [cell.position[0] - 1, cell.position[1] + 1];
+		if (upperLeft[0] >= 0 && upperLeft[1] >= 0) {
+			if (!board[upperLeft[0]][upperLeft[1]].value) {
+				ids.push(board[upperLeft[0]][upperLeft[1]]);
+			} else if (board[upperLeft[0]][upperLeft[1]].player !== this._activePlayer.value) {
+				const jumpedUpperLeft = [upperLeft[0] - 1, upperLeft[1] - 1];
+				if (jumpedUpperLeft[0] >= 0 && jumpedUpperLeft[1] >= 0 && !board[jumpedUpperLeft[0]][jumpedUpperLeft[1]].value) {
+					ids.push(board[jumpedUpperLeft[0]][jumpedUpperLeft[1]]);
+				}
+			}
+		}
+		if (upperRight[0] >= 0 && upperRight[1] <= 7) {
+			if (!board[upperRight[0]][upperRight[1]].value) {
+				ids.push(board[upperRight[0]][upperRight[1]]);
+			} else if (board[upperRight[0]][upperRight[1]].player !== this._activePlayer.value) {
+				const jumpedUpperRight = [upperRight[0] - 1, upperRight[1] + 1];
+				if (jumpedUpperRight[0] >= 0 && jumpedUpperRight[1] <= 7 && !board[jumpedUpperRight[0]][jumpedUpperRight[1]].value) {
+					ids.push(board[jumpedUpperRight[0]][jumpedUpperRight[1]]);
+				}
+			}
+		}
+		return ids.map(c => Number(`${c.position[0]}${c.position[1]}`));
+	}
 
 	cellClicked(cell: Cell): void {
 		const chain = [];
@@ -624,50 +624,60 @@ export class BoardStateService {
 				chain.push(Number(`${c.position[0]}${c.position[1]}`));
 			});
 			this._moveChainIds.next(chain);
-    }
-    // If last move only advanced by one row, it didn't jump, and therefore is ineligible for further movement.
-    const idChain = this._moveChainIds.value;
-    const chainLength = idChain.length;
-    if (chainLength > 1 && Math.abs(idChain[chainLength - 2] - idChain[chainLength - 1]) < 10) {
-      this._clickableCells.next([]);
-      this._readyToSubmit.next(true);
-      return;
-    }
-    if (chainLength > 1) {
-      this._readyToSubmit.next(true);
-    } else {
-      this._readyToSubmit.next(false);
-    }
-    this._clickableCells.next(this._findClickableCells());
+		}
+		// If last move only advanced by one row, it didn't jump, and therefore is ineligible for further movement.
+		const idChain = this._moveChainIds.value;
+		const chainLength = idChain.length;
+		if (chainLength > 1 && Math.abs(idChain[chainLength - 2] - idChain[chainLength - 1]) < 10) {
+			this._clickableCellIds.next([]);
+			this._readyToSubmit.next(true);
+			return;
+		}
+		if (chainLength > 1) {
+			this._readyToSubmit.next(true);
+		} else {
+			this._readyToSubmit.next(false);
+		}
+		this._clickableCellIds.next(this._findClickableCells());
 	}
 
 	getActivePlayer(): number {
 		return this._activePlayer.value;
-  }
-  
-  makeMoves(): void {
-    this._readyToSubmit.next(false);
-    let idChain = this._moveChainIds.value;
-    let cellChain = this._moveChain;
-    let chainLength = cellChain.length;
-    while (chainLength >= 2) {
-      if (Math.abs(idChain[chainLength - 2] - idChain[chainLength - 1]) < 10) {
-        console.log(cellChain[0].position[0], cellChain[0].position[1], cellChain[1].position[0], cellChain[1].position[1]);
-        this._makeMove(cellChain[0].position[0], cellChain[0].position[1], cellChain[1].position[0], cellChain[1].position[1], []);
-      } else {
+	}
 
-      }
-      this._moveChain.shift();
-      this._moveChainIds.next(this._moveChainIds.value.slice(1));
+	makeMoves(): void {
+		this._readyToSubmit.next(false);
+		let idChain = this._moveChainIds.value;
+		let cellChain = this._moveChain;
+    let chainLength = idChain.length;
+    console.log('makeMoves', this._moveChainIds.value, this._moveChain[chainLength - 2],  this._moveChain[chainLength - 1]);
+		while (chainLength >= 2) {
+			if (Math.abs(idChain[chainLength - 2] - idChain[chainLength - 1]) < 10) {
+				this._makeMove(cellChain[0].position[0], cellChain[0].position[1], cellChain[1].position[0], cellChain[1].position[1], []);
+			} else {
+				const lowerNum = idChain[chainLength - 2] < idChain[chainLength - 1] ? idChain[chainLength - 2] : idChain[chainLength - 1];
+				const eliminatedCellId = lowerNum + (Math.abs(idChain[chainLength - 2] - idChain[chainLength - 1]) / 2);
+				const row = Math.floor(eliminatedCellId / 10);
+				const col = eliminatedCellId % 10;
+				const pos = this._boardState.value.cellStates[row][col].position;
+				this._makeMove(
+					cellChain[0].position[0],
+					cellChain[0].position[1],
+					cellChain[1].position[0],
+					cellChain[1].position[1],
+					[pos[0], pos[1]]);
+			}
+			this._moveChain.shift();
+			this._moveChainIds.next(this._moveChainIds.value.slice(1));
 
-      idChain = this._moveChainIds.value;
-      cellChain = this._moveChain;
-      chainLength = cellChain.length;
-    }
-    this._moveChain.length = 0;
-    this._moveChainIds.next([]);
+			idChain = this._moveChainIds.value;
+			cellChain = this._moveChain;
+			chainLength = idChain.length;
+		}
+		this._moveChain.length = 0;
+		this._moveChainIds.next([]);
 
-    this._activePlayer.next(this._activePlayer.value === 1 ? 2 : 1);
-		this._clickableCells.next(this._findClickableCells());
-  }
+		this._activePlayer.next(this._activePlayer.value === 1 ? 2 : 1);
+		this._clickableCellIds.next(this._findClickableCells());
+	}
 }

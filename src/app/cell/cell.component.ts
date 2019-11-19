@@ -28,10 +28,11 @@ export class CellComponent implements OnDestroy, OnInit {
 
 	ngOnInit() {
 		this.subscriptions.push(
-			this.boardStateService.currClickableCells.pipe(filter(x => !!x)).subscribe((clickables: number[]) => {
+			this.boardStateService.currClickableCellIds.pipe(filter(x => !!x)).subscribe((clickables: number[]) => {
 				this.clickableCells = clickables;
 			}),
-			this.boardStateService.currMoveChainCells.pipe(filter(x => !!x)).subscribe((trackedCells: number[]) => {
+			this.boardStateService.currMoveChainIds.pipe(filter(x => !!x)).subscribe((trackedCells: number[]) => {
+				console.log('trackedCells', trackedCells);
 				this.tracked = false;
 				trackedCells.forEach(id => {
 					if (id === this.id) {
