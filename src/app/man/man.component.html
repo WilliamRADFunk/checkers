@@ -1,8 +1,8 @@
 <ng-container *ngIf="cell.player === 1; else opponent">
-    <span class="fa fa-arrow-circle-up white-team-color"></span>
+    <div class="white-team-color"></div>
 </ng-container>
 <ng-template #opponent>
     <ng-container *ngIf="cell.player === 2">
-        <span class="fa fa-arrow-circle-up rotate black-team-color"></span>
+        <div class="rotate black-team-color"></div>
     </ng-container>
 </ng-template>
