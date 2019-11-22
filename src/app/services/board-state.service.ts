@@ -427,6 +427,33 @@ export class BoardStateService {
 		this._clickableCellIds.next(this._findClickableCells());
 	}
 
+	_changeTurn() {
+		this._moveChainCells.length = 0;
+		this._moveChainIds.next([]);
+
+		this._activePlayer.next(this._activePlayer.value === 1 ? 2 : 1);
+		this._crownKings();
+
+		this._clickableCellIds.next(this._findClickableCells());
+	}
+
+	_crownKings() {
+		const board = this._boardState.value.cellStates;
+		if (this._activePlayer.value === 1) {
+			board[0].forEach(cell => {
+				if (cell.player === 1 && cell.value === 1) {
+					cell.value = 2;
+				}
+			});
+		} else {
+			board[7].forEach(cell => {
+				if (cell.player === 2 && cell.value === 1) {
+					cell.value = 2;
+				}
+			});
+		}
+	}
+
 	_downwardPathValidCheck(cell: Cell, board: Cell[][]): boolean {
 		const lowerLeft = [cell.position[0] + 1, cell.position[1] - 1];
 		const lowerRight = [cell.position[0] + 1, cell.position[1] + 1];
@@ -648,7 +675,7 @@ export class BoardStateService {
 		this._readyToSubmit.next(false);
 		let idChain = this._moveChainIds.value;
 		let cellChain = this._moveChainCells;
-    let chainLength = idChain.length;
+    	let chainLength = idChain.length;
 		while (chainLength >= 2) {
 			if (Math.abs(Math.floor(idChain[0] / 10) - Math.floor(idChain[1] / 10)) < 2) {
 				this._makeMove(cellChain[0].position[0], cellChain[0].position[1], cellChain[1].position[0], cellChain[1].position[1], []);
@@ -673,10 +700,6 @@ export class BoardStateService {
 			cellChain = this._moveChainCells;
 			chainLength = idChain.length;
 		}
-		this._moveChainCells.length = 0;
-		this._moveChainIds.next([]);
-
-		this._activePlayer.next(this._activePlayer.value === 1 ? 2 : 1);
-		this._clickableCellIds.next(this._findClickableCells());
+		this._changeTurn();
 	}
 }
