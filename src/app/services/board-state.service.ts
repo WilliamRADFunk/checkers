@@ -424,7 +424,7 @@ export class BoardStateService {
 	private _moveChainCells: Cell[] = [];
 
 	constructor() {
-		this._clickableCellIds.next(this._findClickableCells());
+		this._clickableCellIds.next(this._findClickableCells(this._activePlayer.value));
 	}
 
 	_changeTurn() {
@@ -434,7 +434,7 @@ export class BoardStateService {
 		this._activePlayer.next(this._activePlayer.value === 1 ? 2 : 1);
 		this._crownKings();
 
-		this._clickableCellIds.next(this._findClickableCells());
+		this._clickableCellIds.next(this._findClickableCells(this._activePlayer.value));
 	}
 
 	_crownKings() {
@@ -507,19 +507,17 @@ export class BoardStateService {
 		return ids.map(c => Number(`${c.position[0]}${c.position[1]}`));
 	}
 
-	_findClickableCells(): number[] {
-		if (this._activePlayer.value === 1) {
-			return this._findClickableCellsUpward();
-		}
-		return this._findClickableCellsDownward();
-	}
-
-	_findClickableCellsDownward(): number[] {
+	_findClickableCells(direction: number): number[] {
 		const board = this._boardState.value.cellStates;
 		if (!this._moveChainCells.length) {
 			let playerPieces = this._findPiecesForPlayer();
 			playerPieces = playerPieces.filter(cell => {
-				return this._downwardPathValidCheck(cell, board);
+				// If a king, combine upward and downward, otherwise restrict to direction of player.
+				if (cell.value === 2) {
+					return this._upperPathValidCheck(cell, board) || this._downwardPathValidCheck(cell, board);
+				} else {
+					return direction === 1 ? this._upperPathValidCheck(cell, board) : this._downwardPathValidCheck(cell, board);
+				}
 			});
 			const ids = [];
 			playerPieces.forEach(cell => {
@@ -527,23 +525,12 @@ export class BoardStateService {
 			});
 			return ids;
 		}
-		return this._downwardPathValidOptions(this._moveChainCells[this._moveChainCells.length - 1], board);
-	}
-
-	_findClickableCellsUpward(): number[] {
-		const board = this._boardState.value.cellStates;
-		if (!this._moveChainCells.length) {
-			let playerPieces = this._findPiecesForPlayer();
-			playerPieces = playerPieces.filter(cell => {
-				return this._upperPathValidCheck(cell, board);
-			});
-			const ids = [];
-			playerPieces.forEach(cell => {
-				ids.push(Number(`${cell.position[0]}${cell.position[1]}`));
-			});
-			return ids;
+		// If a king, combine upward and downward, otherwise restrict to direction of player.
+		if (this._moveChainCells[this._moveChainCells.length - 1].value === 2) {
+			return [...this._upwardPathValidOptions(this._moveChainCells[this._moveChainCells.length - 1], board), ...this._downwardPathValidOptions(this._moveChainCells[this._moveChainCells.length - 1], board)];
+		} else {
+			return direction === 1 ? this._upwardPathValidOptions(this._moveChainCells[this._moveChainCells.length - 1], board) : this._downwardPathValidOptions(this._moveChainCells[this._moveChainCells.length - 1], board);
 		}
-		return this._upwardPathValidOptions(this._moveChainCells[this._moveChainCells.length - 1], board);
 	}
 
 	_findPiecesForPlayer(): Cell[] {
@@ -664,7 +651,7 @@ export class BoardStateService {
 		} else {
 			this._readyToSubmit.next(false);
 		}
-		this._clickableCellIds.next(this._findClickableCells());
+		this._clickableCellIds.next(this._findClickableCells(this._activePlayer.value));
 	}
 
 	getActivePlayer(): number {
