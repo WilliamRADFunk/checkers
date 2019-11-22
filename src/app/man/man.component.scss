@@ -9,7 +9,12 @@
   height: 4vw;
 	min-height: 4vw;
 	min-width: 4vw;
-	width: 4vw;
+  width: 4vw;
+
+  .fa,
+  .fa-rebel {
+      color: #BABABA;
+  }
 }
 .white-team-color {
   background-image: url("../../assets/images/frogo-silver.png");
@@ -19,5 +24,16 @@
   height: 4vw;
 	min-height: 4vw;
 	min-width: 4vw;
-	width: 4vw;
+  width: 4vw;
+
+  .fa,
+  .fa-rebel {
+      color: #DA1C1C;
+  }
+}
+.crown {
+
+  .fa {
+    font-size: 0.5em;
+  }
 }
