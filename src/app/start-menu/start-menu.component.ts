@@ -6,7 +6,9 @@ import { Component, EventEmitter, Output } from '@angular/core';
     styleUrls: ['./start-menu.component.scss']
 })
 export class StartMenuComponent {
+    activeOpponent: string = 'Local Human';
     @Output() helpSelected: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() opponentSelected: EventEmitter<number> = new EventEmitter<number>();
     @Output() startSelected: EventEmitter<void> = new EventEmitter<void>();
 
     constructor() { }
@@ -15,8 +17,8 @@ export class StartMenuComponent {
         this.helpSelected.emit(true);
     }
 
-    getTooltipMsg(num: number): string {
-        switch (num) {
+    getTooltipMsg(choice: number): string {
+        switch (choice) {
             case 1: {
                 return 'Blah';
             }
@@ -24,6 +26,10 @@ export class StartMenuComponent {
                 return 'Not a valid option';
             }
         }
+    }
+
+    opponentChange(choice: string): void {
+        this.activeOpponent = choice;
     }
 
     startGame(): void {

@@ -31,162 +31,70 @@
     <div *ngIf="activePage === 1" class="d-flex justify-content-center">
       <div class="col text-left text-white pb-2 pt-2">
         <div class="h4">
-          Each quadrant must have numbers 1 through 9 without duplicates.
+          Each player can move one piece per turn, and only diagonally along the dark tiles.
           <br/>
           <br/>
-          <div class="text-center"><img class="img-fluid" src="assets/images/img-help-01.png"/></div>
+          <div class="text-center"><img class="img-fluid" src="assets/images/checkers-help-01.jpg"/></div>
         </div>
       </div>
     </div>
     <div *ngIf="activePage === 2" class="d-flex justify-content-center">
       <div class="col text-left text-white pb-2 pt-2">
         <div class="h4">
-          There can be no duplicate numbers in any row or column.
+          Unless a piece has been made a king, it could only move in the same vertical direction.
           <br/>
           <br/>
-          <div class="text-center"><img class="img-fluid" src="assets/images/img-help-02.png"/></div>
+          <div class="text-center"><img class="img-fluid" src="assets/images/checkers-help-02.jpg"/></div>
         </div>
       </div>
     </div>
     <div *ngIf="activePage === 3" class="d-flex justify-content-center">
       <div class="col text-left text-white pb-2 pt-2">
         <div class="h4">
-          Every SuDoKu board has exactly one correct combination of numbers,
-          and all spaces must be filled to complete a board.
+          Unless jumping over an opponent's piece, a player's piece can move diagonally only one tile.
           <br/>
           <br/>
-          When all boards are complete...you win!
+          If jumping over an opponent's piece, the player's piece can and must leap two tiles diagonally.
           <br/>
           <br/>
-          <div class="text-center"><img class="img-fluid" src="assets/images/img-help-03.png"/></div>
+          If a combination of jumps are available to the same piece in the same vertical direction,
+          a player's piece can make multiple hops in the same turn.
+          <br/>
+          <br/>
+          <div class="text-center"><img class="img-fluid" src="assets/images/checkers-help-03.jpg"/></div>
         </div>
       </div>
     </div>
     <div *ngIf="activePage === 4" class="d-flex justify-content-center">
       <div class="col text-left text-white pb-2 pt-2">
         <div class="h4">
-          There are 2 modes for interacting with a SuDoKu board.
+          When a piece reaches the opposite end of the board, it is converted into a king.
           <br/>
           <br/>
-          Answer Mode is the pencil icon (activated by clicking flag button)
-          and any number highlighted will be the number you enter into a cell when you click there.
+          A king can move diagonally in either of the two vertical directions, and jump opponent pieces with the same freedom.
           <br/>
           <br/>
-          <div class="text-center"><img class="img-fluid" src="assets/images/img-help-04.png"/></div>
+          <div class="text-center"><img class="img-fluid" src="assets/images/checkers-help-04.jpg"/></div>
         </div>
       </div>
     </div>
     <div *ngIf="activePage === 5" class="d-flex justify-content-center">
       <div class="col text-left text-white pb-2 pt-2">
         <div class="h4">
-          There other mode for interacting with a SuDoKu board is Flag Mode.
+          To win the game, a player must either: eliminate all of the opponents' pieces,
           <br/>
           <br/>
-          Flag Mode is the button with a flag icon (activated by clicking pencil button)
-          and any number highlighted will be the number you enter into a cell when you click there.
-          <br/>
-          <br/>
-          This has no effect on the outcome of a game, but can help you keep track of your options.
-          <br/>
-          <br/>
-          <div class="text-center"><img class="img-fluid" src="assets/images/img-help-05.png"/></div>
+          <div class="text-center"><img class="img-fluid" src="assets/images/checkers-help-05.jpg"/></div>
         </div>
       </div>
     </div>
     <div *ngIf="activePage === 6" class="d-flex justify-content-center">
       <div class="col text-left text-white pb-2 pt-2">
         <div class="h4">
-          Each level of Sudoku Extreme increases the number of boards in play exponentially:
-          1, 9, 81, 729, 6561, ...
+          ... or trap the opponent in such a way that they have no valid moves to make during their turn.
           <br/>
           <br/>
-          Build time increases significantly for each level chosen as all boards are interconnected.
-          <br/>
-          <br/>
-          With the exception of the highest level,
-          <br/>
-          each board's quadrant is associated with an entire checkers board in the level above it.
-          <br/>
-          <br/>
-          Since there are 9 quadrants to a board,
-          each board has 9 additional boards associated with it in the level above.
-        </div>
-      </div>
-    </div>
-    <div *ngIf="activePage === 7" class="d-flex justify-content-center">
-      <div class="col text-left text-white pb-2 pt-2">
-        <div class="h4">
-          Each cell on a board in a lower level connects to the center cell of a quadrant within a board one level higher.
-          <br/>
-          <br/>
-          Enter a number in a lower level board, and the upper level board will be changed. The reverse is also true.
-          <br/>
-          <br/>
-          <div class="text-center iso-img iso-img-top"><img class="img-fluid" src="assets/images/img-help-06-01.png"/></div>
-          <div class="text-center iso-img iso-img-bottom"><img class="img-fluid" src="assets/images/img-help-06-00.png"/></div>
-        </div>
-      </div>
-    </div>
-    <div *ngIf="activePage === 8" class="d-flex justify-content-center">
-      <div class="col text-left text-white pb-2 pt-2">
-        <div class="h4">
-          The board navigation menu lets you hop through boards connected to each other level by level.
-          <br/>
-          <br/>
-          When on level 1's board, the buttons beneath are the boards connected to it.
-          Click on button 3 in the next level to see that board,
-          and also get buttons 20 through 28,
-          which are the boards connected to it, and in turn connected to the board on level 1.
-          <br/>
-          <br/>
-          Click on button 3 to go back to that board, or the level 1 button to go back to that board.
-          <br/>
-          <br/>
-          <div class="row">
-            <div class="col-4 text-center"><img class="img-fluid" src="assets/images/img-help-07-00.png"/></div>
-            <div class="col-4 text-center"><img class="img-fluid" src="assets/images/img-help-07-01.png"/></div>
-            <div class="col-4 text-center"><img class="img-fluid" src="assets/images/img-help-07-02.png"/></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div *ngIf="activePage === 9" class="d-flex justify-content-center">
-      <div class="col text-left text-white pb-2 pt-2">
-        <div class="h4">
-          When playing of screens with 768px or higher, an additional helper is available.
-          <br/>
-          <br/>
-          When hovering over the board,
-          the three quadrants in the hovered over column reveal their associated boards in the right-hand-side display.
-          <br/>
-          <br/>
-          The specific quadrant hovered over will highlight that specific board in blue.
-          The hovered over cell will also highlight the connected cell with a peach color.
-          <br/>
-          <br/>
-          <div class="text-center"><img class="img-fluid" src="assets/images/img-help-08.png"/></div>
-        </div>
-      </div>
-    </div>
-    <div *ngIf="activePage === 10" class="d-flex justify-content-center">
-      <div class="col text-left text-white pb-2 pt-2">
-        <div class="h4">
-          When playing at higher levels, you probably won't have the time to finish the game in a single sitting.
-          <br/>
-          <br/>
-          To account for this, SuDoKu ExTrEmE allows you to save your game. Simply click on the "Save" button.
-          <br/>
-          <br/>
-          Either copy the long string of alphanumerical characters manually,
-          or you can click either the copy to clipboard button,
-          or the download to text file button.
-          <br/>
-          <br/>
-          Now that you have your game's state saved in a key, you can paste it into the load game section.
-          You can find this on the start menu by clicking the "Load Game" button.
-          <br/>
-          <br/>
-          Once pasted, simply press the green button in the upper corner and your previous game will populate the screen.
+          <div class="text-center"><img class="img-fluid" src="assets/images/checkers-help-06.jpg"/></div>
         </div>
       </div>
     </div>

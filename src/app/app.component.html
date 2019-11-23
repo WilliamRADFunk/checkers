@@ -3,7 +3,7 @@
 		<div class="d-flex justify-content-center">
 			<div class="col text-center text-white mt-md-5 mt-4 mb-2">
 				<button
-					class="btn btn-sm btn-primary btn-default text-shadow shadow rounded"
+					class="btn btn-sm btn-light btn-default text-shadow shadow rounded"
 					(click)="enterHelp(true)"
 					ngbTooltip="See Help Screen"
 					tooltipClass="checkers-tooltip"
@@ -36,7 +36,8 @@
     </div>
     <div class="col-12 order-1 order-md-2 w-100" [class.col-md-8]="!helpMode && !showStartMenu()">
         <checkers-start-menu *ngIf="showStartMenu()"
-            (helpSelected)="enterHelp($event)"
+			(helpSelected)="enterHelp($event)"
+            (opponentSelected)="changeOpponent($event)"
             (startSelected)="startGame($event)"></checkers-start-menu>
 		<div *ngIf="!showStartMenu() && !helpMode" class="row no-gutters mt-3">
 			<div class="col-4"></div>

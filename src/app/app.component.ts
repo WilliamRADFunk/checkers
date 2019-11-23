@@ -52,6 +52,10 @@ export class AppComponent implements OnInit {
 		);
 	}
 
+	changeOpponent(e: number) {
+		this._boardStateService.changeOpponent(e);
+	}
+
     enterHelp(e: boolean) {
 		console.log('enterHelp');
         this.helpMode = true;

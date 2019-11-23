@@ -10,10 +10,12 @@ export class BoardStateService {
 	private _activePlayer: BehaviorSubject<number> = new BehaviorSubject<number>(1);
 	private readonly _boardState: BehaviorSubject<Board> = new BehaviorSubject<Board>(this._resetBoard());
 	private readonly _clickableCellIds: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
-	// 0 == not over, 1 == player 1 wins, 2 == player 2 wins, 3 == stalemate.
+	// 0 == not over, 1 == player 1 wins, 2 == player 2 wins.
 	private readonly _gameStatus: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 	private readonly _readyToSubmit: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 	private readonly _moveChainIds: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
+	// 1 == Local human player, 2 == AI player, 3 == Online human player.
+	private _opponent: number = 1;
 	readonly currActivePlayer: Observable<number> = this._activePlayer.asObservable();
 	readonly currBoardState: Observable<Board> = this._boardState.asObservable();
 	readonly currClickableCellIds: Observable<number[]> = this._clickableCellIds.asObservable();
@@ -42,9 +44,7 @@ export class BoardStateService {
 	_checkForEndGame() {
 		if (this._clickableCellIds.value.length) {
 			this._gameStatus.next(0); // Player not only has pieces, but available moves too.
-		// Player has pieces left, but none that can move.
-		} else if (this._findPiecesForPlayer().length) {
-			this._gameStatus.next(3); // Stalemate
+		// Player has(n't) pieces left, but none that can move.
 		} else {
 			this._gameStatus.next(this._activePlayer.value === 2 ? 1 : 2); // Opposite of new player is winner.
 		}
@@ -293,8 +293,16 @@ export class BoardStateService {
 		this._clickableCellIds.next(this._findClickableCells(this._activePlayer.value));
 	}
 
+	changeOpponent(opponent: number): void {
+		this._opponent = opponent;
+	}
+
 	getActivePlayer(): number {
 		return this._activePlayer.value;
+	}
+
+	getOpponent(): number {
+		return this._opponent;
 	}
 
 	makeMoves(): void {

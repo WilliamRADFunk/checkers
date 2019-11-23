@@ -8,7 +8,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 export class HelpScreenComponent {
   activePage: number = 1;
   @Output() helpSelected: EventEmitter<boolean> = new EventEmitter<boolean>();
-  readonly totalPages: number = 10;
+  readonly totalPages: number = 6;
 
   constructor() { }
 
