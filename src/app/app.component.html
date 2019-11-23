@@ -1,25 +1,69 @@
-<div class="container-fluid">
-	<div class="d-flex justify-content-center">
-		<div class="col-2"></div>
-		<div class="col-8 text-center mt-2">
-			<span class="h1 d-block d-sm-inline-block mb-2 mb-sm-0">Checkers</span><br/>
+<div class="row no-gutters">
+    <div *ngIf="showNavigationPanel()" class="col-12 col-md-2 order-2 order-md-1 w-100 text-center">
+		<div class="d-flex justify-content-center">
+			<div class="col text-center text-white mt-md-5 mt-4 mb-2">
+				<button
+					class="btn btn-sm btn-primary btn-default text-shadow shadow rounded"
+					(click)="enterHelp(true)"
+					ngbTooltip="See Help Screen"
+					tooltipClass="checkers-tooltip"
+					placement="bottom"
+					type="button">Tutorial</button>
+			</div>
+			<div class="col text-center text-white mt-md-5 mt-4 mb-2">
+				<button
+					class="btn btn-sm btn-danger btn-default text-shadow shadow rounded"
+					(click)="goToMenu()"
+					ngbTooltip="Return to Menu"
+					tooltipClass="checkers-tooltip"
+					placement="bottom"
+					type="button">Quit</button>
+			</div>
 		</div>
-		<div class="col-2"></div>
-	</div>
-	<div class="row no-gutters mt-3">
-		<div class="col-4"></div>
-		<div class="col-4">
-			<span class="h2 d-inline-block mb-2 mb-sm-0">Player {{ activePlayer }}</span>
-			<button
-				*ngIf="canSubmitMove"
-				(click)="submitMove()"
-				class="btn btn-success btn-sm pull-right">Confirm</button>
+		<div class="d-flex justify-content-center">
+			<div class="col text-center text-white mt-2">
+				<span class="h2 d-inline-block mb-2 mb-sm-0">Player {{ activePlayer }}'s Turn</span>
+			</div>
 		</div>
-		<div class="col-4"></div>
-	</div>
-	<div class="row no-gutters mt-3">
-		<div class="col-4"></div>
-		<checkers-game-board></checkers-game-board>
-		<div class="col-4"></div>
-	</div>
+		<div class="d-flex">
+			<div class="col text-center text-white mt-2">
+				<button
+					*ngIf="canSubmitMove"
+					(click)="submitMove()"
+					class="btn btn-success btn-sm">Confirm Move</button>
+			</div>
+		</div>
+    </div>
+    <div class="col-12 order-1 order-md-2 w-100" [class.col-md-8]="!helpMode && !showStartMenu()">
+        <checkers-start-menu *ngIf="showStartMenu()"
+            (helpSelected)="enterHelp($event)"
+            (startSelected)="startGame($event)"></checkers-start-menu>
+		<div *ngIf="!showStartMenu() && !helpMode" class="row no-gutters mt-3">
+			<div class="col-4"></div>
+			<checkers-game-board></checkers-game-board>
+			<div class="col-4"></div>
+		</div>
+        <checkers-help-screen *ngIf="helpMode"
+            (helpSelected)="exitHelp($event)"></checkers-help-screen>
+    </div>
 </div>
+
+<ng-template #content let-modal>
+    <div class="pyro" style="z-index: -10">
+        <div class="before"></div>
+        <div class="after"></div>
+    </div>
+    <div class="modal-header" id="modal-gameover-title">
+      <h4 class="modal-title text-center text-white text-shadow">YOU WON!</h4>
+    </div>
+    <div class="modal-body" id="modal-gameover-body"></div>
+    <div class="modal-footer text-center" id="modal-gameover-footer">
+      <button
+        type="button"
+        class="btn btn-primary text-shadow"
+        (click)="goToMenu()"
+        ngbTooltip="Return to Menu"
+        tooltipClass="checkers-tooltip"
+        placement="bottom">Exit</button>
+    </div>
+</ng-template>

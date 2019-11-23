@@ -10,11 +10,14 @@ export class BoardStateService {
 	private _activePlayer: BehaviorSubject<number> = new BehaviorSubject<number>(1);
 	private readonly _boardState: BehaviorSubject<Board> = new BehaviorSubject<Board>(this._resetBoard());
 	private readonly _clickableCellIds: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
+	// 0 == not over, 1 == player 1 wins, 2 == player 2 wins, 3 == stalemate.
+	private readonly _gameStatus: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 	private readonly _readyToSubmit: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 	private readonly _moveChainIds: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
 	readonly currActivePlayer: Observable<number> = this._activePlayer.asObservable();
 	readonly currBoardState: Observable<Board> = this._boardState.asObservable();
 	readonly currClickableCellIds: Observable<number[]> = this._clickableCellIds.asObservable();
+	readonly currGameStatus: Observable<number> = this._gameStatus.asObservable();
 	readonly currMoveChainIds: Observable<number[]> = this._moveChainIds.asObservable();
 	readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
 
@@ -32,6 +35,19 @@ export class BoardStateService {
 		this._activePlayer.next(this._activePlayer.value === 1 ? 2 : 1);
 
 		this._clickableCellIds.next(this._findClickableCells(this._activePlayer.value));
+
+		this._checkForEndGame();
+	}
+
+	_checkForEndGame() {
+		if (this._clickableCellIds.value.length) {
+			this._gameStatus.next(0); // Player not only has pieces, but available moves too.
+		// Player has pieces left, but none that can move.
+		} else if (this._findPiecesForPlayer().length) {
+			this._gameStatus.next(3); // Stalemate
+		} else {
+			this._gameStatus.next(this._activePlayer.value === 2 ? 1 : 2); // Opposite of new player is winner.
+		}
 	}
 
 	_crownKings() {
@@ -290,11 +306,11 @@ export class BoardStateService {
 			if (Math.abs(Math.floor(idChain[0] / 10) - Math.floor(idChain[1] / 10)) < 2) {
 				this._makeMove(cellChain[0].position[0], cellChain[0].position[1], cellChain[1].position[0], cellChain[1].position[1], []);
 			} else {
-        const lowerNum = idChain[0] < idChain[1] ? idChain[0] : idChain[1];
-        const diff = Math.abs(idChain[0] - idChain[1]);
+				const lowerNum = idChain[0] < idChain[1] ? idChain[0] : idChain[1];
+				const diff = Math.abs(idChain[0] - idChain[1]);
 				const eliminatedCellId = lowerNum + Math.floor(diff / 2) + (diff % 2);
 				const row = Math.floor(eliminatedCellId / 10);
-        const col = eliminatedCellId % 10;
+        		const col = eliminatedCellId % 10;
 				const pos = this._boardState.value.cellStates[row][col].position;
 				this._makeMove(
 					cellChain[0].position[0],
@@ -311,5 +327,15 @@ export class BoardStateService {
 			chainLength = idChain.length;
 		}
 		this._changeTurn();
+	}
+
+	reset() {
+		this._gameStatus.next(0);
+		this._activePlayer.next(1);
+		this._boardState.next(this._resetBoard());
+		this._clickableCellIds.next([]);
+		this._readyToSubmit.next(false);
+		this._moveChainIds.next([]);
+		this._moveChainCells = [];
 	}
 }

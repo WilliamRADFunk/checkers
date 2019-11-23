@@ -1,0 +1,42 @@
+<div class="container-fluid">
+	<div class="d-flex justify-content-center">
+		<div class="col text-center mt-5">
+            <span class="h1 mb-2">Freckers</span>
+        </div>
+	</div>
+	<div class="d-flex justify-content-center">
+        <div class="col-8 col-md-4 mx-auto">
+            <div class="row">
+                <div class="col-6 text-center text-white mt-5">
+                    <button
+                        class="btn btn-primary text-shadow shadow rounded"
+                        (click)="startGame()"
+                        ngbTooltip="Create a game with {{activeLevel}} level{{(activeLevel - 1) ? 's' : ''}}"
+                        tooltipClass="checkers-tooltip"
+                        placement="bottom"
+                        type="button">Start Game</button>
+                </div>
+                <div class="col-6 text-center text-white mt-5">
+                    <button
+                        class="btn btn-primary text-shadow shadow rounded"
+                        (click)="loadGame()"
+                        ngbTooltip="Load game using key"
+                        tooltipClass="checkers-tooltip"
+                        placement="bottom"
+                        type="button">Load Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+	<div class="d-flex justify-content-center">
+		<div class="col text-center text-white mt-5">
+            <button
+                class="btn btn-sm btn-dark btn-default text-shadow shadow rounded"
+                (click)="enterHelp()"
+                ngbTooltip="See Help Screen"
+                tooltipClass="checkers-tooltip"
+                placement="bottom"
+                type="button">Tutorial</button>
+        </div>
+    </div>
+</div>

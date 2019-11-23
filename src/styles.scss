@@ -5,3 +5,7 @@ $enable-shadows: true;
 // needed so font-awesome knows where fonts are loaded from
 $fa-font-path: '~font-awesome/fonts';
 @import '~font-awesome/scss/font-awesome';
+
+body {
+    background-color: #333333;
+}
