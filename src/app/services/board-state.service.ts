@@ -39,6 +39,10 @@ export class BoardStateService {
 		this._clickableCellIds.next(this._findClickableCells(this._activePlayer.value));
 
 		this._checkForEndGame();
+
+		if (!this._gameStatus.value && this._opponent === 2 && this._activePlayer.value === 2) {
+			// Have AI make a move.
+		}
 	}
 
 	_checkForEndGame() {
@@ -191,7 +195,7 @@ export class BoardStateService {
 					value: (row % 2) + (col % 2) === 1 ? 1 : 0
 				};
 				if (row < 3) {
-					cell.player = 0;//cell.value ? 2 : 0;
+					cell.player = cell.value ? 2 : 0;
 					cell.playerColor = cell.value ? 'black' : '';
 				} else if (row > 4) {
 					cell.player = cell.value;
@@ -345,5 +349,7 @@ export class BoardStateService {
 		this._readyToSubmit.next(false);
 		this._moveChainIds.next([]);
 		this._moveChainCells = [];
+		
+		this._clickableCellIds.next(this._findClickableCells(this._activePlayer.value));
 	}
 }

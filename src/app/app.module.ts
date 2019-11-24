@@ -23,7 +23,7 @@ import { HelpScreenComponent } from './help-screen/help-screen.component';
 	imports: [
 		BrowserModule,
 		FormsModule,
-		NgbModule
+		NgbModule.forRoot()
 	],
 	providers: [ BoardStateService ],
 	bootstrap: [ AppComponent ]

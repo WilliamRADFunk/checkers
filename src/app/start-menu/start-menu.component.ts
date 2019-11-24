@@ -17,10 +17,16 @@ export class StartMenuComponent {
         this.helpSelected.emit(true);
     }
 
-    getTooltipMsg(choice: number): string {
+    getTooltipMsg(choice: string): string {
         switch (choice) {
-            case 1: {
-                return 'Blah';
+            case 'Local Human': {
+                return 'Play with a friend, taking turns on the same device.';
+            }
+            case 'AI': {
+                return 'Play against a computer opponent and test your skills at different levels of difficulty.';
+            }
+            case 'Online Human': {
+                return 'Play with another human online, either matched randomly or using a private lounge key.';
             }
             default: {
                 return 'Not a valid option';

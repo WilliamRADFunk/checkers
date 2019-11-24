@@ -18,13 +18,17 @@ export class AppComponent implements OnInit {
     @ViewChild('content', { static: true }) content: any;
     public gameOver: boolean = false;
     public gameOverAck: boolean = true;
-    public helpMode: boolean = false;
+	public helpMode: boolean = false;
 
 	constructor(
 		private readonly _boardStateService: BoardStateService,
-		private modalService: NgbModal) {}
+		private modalService: NgbModal) { }
 
 	ngOnInit() {
+		this._subscriptionSetup();
+	}
+
+	private _subscriptionSetup() {
 		this.subscriptions.push(
 			this._boardStateService.currActivePlayer.pipe(filter(x => !!x)).subscribe((ap: number) => {
 				this.activePlayer = ap;
@@ -39,14 +43,21 @@ export class AppComponent implements OnInit {
 						centered: true,
 						size: 'lg',
 						windowClass: 'transparent-modal'
-					}).result.then(() => {
-							// Already handled this means of closing the modal.
-						}, reason => {
-							// Since player clicked outside modal, have to handle the restart.
-							if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-								this.goToMenu();
-							}
-						});
+					})
+					.result
+					.then(() => {
+						// Already handled this means of closing the modal.
+					},
+					(reason) => {
+						// Since player clicked outside modal, have to handle the restart.
+						if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+							this.goToMenu();
+						}
+					});
+					// Not ideal, but for mysterious reasons the exit button tooltip always starts open
+					setTimeout(() => {
+						document.getElementById('modalTooltip').blur();
+					}, 0);
 				}
 			})
 		);
@@ -63,7 +74,17 @@ export class AppComponent implements OnInit {
 
     exitHelp() {
         this.helpMode = false;
-    }
+	}
+
+	getPlayerTurnMsg(): string {
+		if (this.activePlayer === 1) {
+			return 'Your Turn';
+		} else if (this._boardStateService.getOpponent() === 2) {
+			return '(AI) Player 2\'s Turn';
+		} else {
+			return '(Human) Player 2\'s Turn';
+		}
+	}
 
     goToMenu() {
         if (this.modalService.hasOpenModals()) {
@@ -77,32 +98,8 @@ export class AppComponent implements OnInit {
         this.gameOverAck = true;
 
 		this._boardStateService.reset();
-
-        this.subscriptions.push(
-			this._boardStateService.currActivePlayer.pipe(filter(x => !!x)).subscribe((ap: number) => {
-				this.activePlayer = ap;
-			}),
-			this._boardStateService.readyToSubmit.subscribe(submittable => {
-				this.canSubmitMove = submittable;
-			}),
-			this._boardStateService.currGameStatus.subscribe(gs => {
-				this.gameOver = !!gs;
-				if (this.gameOver) {
-					this.modalService.open(this.content, {
-						centered: true,
-						size: 'lg',
-						windowClass: 'transparent-modal'
-					}).result.then(() => {
-							// Already handled this means of closing the modal.
-						}, reason => {
-							// Since player clicked outside modal, have to handle the restart.
-							if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-								this.goToMenu();
-							}
-						});
-				}
-			})
-		);
+        
+		this._subscriptionSetup();
     }
 
     showNavigationPanel(): boolean {

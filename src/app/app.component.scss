@@ -3,12 +3,29 @@
     width: 11%;
 }
 
+.h1 {
+  border-bottom: 0.25vw solid #FFFFFF;
+  font-family: 'Bradley Hand', cursive;
+  font-size: 2.5vw;
+  line-height: 60px;
+  text-shadow: 2px 2px #555555;
+}
+
 .text-shadow {
   text-shadow: 0.5px 0.5px 3px #000000;
 
   &.btn.btn-warning {
     text-shadow: 0.5px 0.5px #FFFFFF;
   }
+}
+
+@media only screen and (max-width: 767px) {
+    .h1 {
+        border-bottom: 2px solid #FFFFFF;
+        font-size: 30px;
+        line-height: 40px;
+        text-shadow: 1px 1px #555555;
+    }
 }
 
 #modal-gameover-body,
