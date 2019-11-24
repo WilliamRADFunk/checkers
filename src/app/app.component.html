@@ -22,8 +22,13 @@
 		</div>
 		<div class="d-flex justify-content-center">
 			<div class="col text-center text-white mt-2">
-				<span *ngIf="!gameOver" class="h3 d-inline-block mb-2 mb-sm-0">{{ getPlayerTurnMsg() }}</span>
-				<span *ngIf="gameOver" class="h3 d-inline-block mb-2 mb-sm-0">Game Over</span>
+				<span *ngIf="!gameOver" class="h5 d-inline-block mb-2 mb-sm-0">
+					{{ getPlayerTurnMsg() }}
+					<ng-container *ngIf="opponentIsThinking">
+						<span class="fa fa-gear fa-spin"></span>
+					</ng-container>
+				</span>
+				<span *ngIf="gameOver" class="h5 d-inline-block mb-2 mb-sm-0">Game Over</span>
 			</div>
 		</div>
 		<div class="d-flex">

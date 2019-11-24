@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
     public gameOver: boolean = false;
     public gameOverAck: boolean = true;
 	public helpMode: boolean = false;
+	public opponentIsThinking: boolean = false;
 
 	constructor(
 		private readonly _boardStateService: BoardStateService,
@@ -30,6 +31,9 @@ export class AppComponent implements OnInit {
 
 	private _subscriptionSetup() {
 		this.subscriptions.push(
+			this._boardStateService.currOpponentThinking.subscribe(isThinking => {
+				this.opponentIsThinking = isThinking;
+			}),
 			this._boardStateService.currActivePlayer.pipe(filter(x => !!x)).subscribe((ap: number) => {
 				this.activePlayer = ap;
 			}),

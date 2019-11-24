@@ -36,6 +36,20 @@ export class StartMenuComponent {
 
     opponentChange(choice: string): void {
         this.activeOpponent = choice;
+        switch (choice) {
+            case 'Local Human': {
+                this.opponentSelected.emit(1);
+                break;
+            }
+            case 'AI': {
+                this.opponentSelected.emit(2);
+                break;
+            }
+            case 'Online Human': {
+                this.opponentSelected.emit(3);
+                break;
+            }
+        }
     }
 
     startGame(): void {
