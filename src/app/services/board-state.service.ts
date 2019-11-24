@@ -191,7 +191,7 @@ export class BoardStateService {
 					value: (row % 2) + (col % 2) === 1 ? 1 : 0
 				};
 				if (row < 3) {
-					cell.player = cell.value ? 2 : 0;
+					cell.player = 0;//cell.value ? 2 : 0;
 					cell.playerColor = cell.value ? 'black' : '';
 				} else if (row > 4) {
 					cell.player = cell.value;
