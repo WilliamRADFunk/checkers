@@ -1,9 +1,10 @@
 import { Board } from '../models/board';
 
 export function cloneBoard(origBoard: Board): Board {
-    const newBoard = { cellStates: [ [], [], [], [], [], [], [], [] ] };
+    const newBoard = { cellStates: [] };
     const cellStates = origBoard.cellStates;
     cellStates.forEach((row, outerIndex) => {
+        newBoard.cellStates[outerIndex] = [];
         row.forEach((cell, innerIndex) => {
             const newCell = {
                 player: cell.player,
