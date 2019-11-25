@@ -51,7 +51,7 @@ export class BoardStateService {
 		this._moveChainCells.length = 0;
 		this._moveChainIds.next([]);
 
-		crownKings(this._activePlayer.value, this._boardState.value);
+		crownKings(this._boardState.value);
 		this._activePlayer.next(this._activePlayer.value === 1 ? 2 : 1);
 
 		this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
@@ -65,7 +65,7 @@ export class BoardStateService {
 			this._clickableCellIds.next([]);
 			setTimeout(() => {
 				console.log('_changeTurn availablePieces', availablePieces);
-				const result = this._AiDecider(cloneBoard(this._boardState.value), 2, availablePieces);
+				const result = this._AiDecider(cloneBoard(this._boardState.value), 2, 2, availablePieces);
 				console.log('_changeTurn', result);
 				this.makeMoves(result.moveChainIds, convertIdsToCells(this._boardState.value, result.moveChainIds));
 			}, 1000);
@@ -74,21 +74,24 @@ export class BoardStateService {
 		}
 	}
 
-	_AiDecider(board: Board, aiPlayer: number, startingPieces: number[]): AIChoiceTrack {
+	_AiDecider(board: Board, aiPlayer: number, currPlayer: number, startingPieces: number[]): AIChoiceTrack {
 		const scores: AIChoiceTrack[] = [];
 		const results = [];
 		startingPieces.forEach(id => {
-			const firstMoves = findClickableCells(aiPlayer, board, convertIdsToCells(board, [id]));
+			const firstMoves = findClickableCells(currPlayer, board, convertIdsToCells(board, [id]));
 			firstMoves.forEach(move => {
-				results.push(this._getMoveChains(board, aiPlayer, [id, move]));
+				results.push(this._getMoveChains(board, currPlayer, [id, move]));
 			});
 		});
 		console.log('_AiDecider results', results);
 		// Find the score leading from each of the possible move chains.
-		results.forEach(chain => {
-			const newBoard = cloneBoard(board);
-			console.log('_AiDecider chain', chain[0]);
-			scores.push({ moveChainIds: chain[0], score: this._AiMove(newBoard, aiPlayer, aiPlayer === 2 ? 1 : 2, chain[0], 5) });
+		results.forEach(chains => {
+			chains.forEach(chain => {
+				const newBoard = cloneBoard(board);
+				makeMoves(newBoard, chain, convertIdsToCells(newBoard, chain));
+				crownKings(newBoard);
+				scores.push({ moveChainIds: chain, score: this._AiMove(newBoard, aiPlayer, currPlayer === 2 ? 1 : 2, [], 6) });
+			});
 		});
 		console.log('_AiDecider before findMaxScore', scores);
 		return findMaxScore(scores);
@@ -100,7 +103,6 @@ export class BoardStateService {
 		if (!newMoves.length) {
 			return [previousChain];
 		}
-		console.log('_getMoveChains', previousChain, newMoves);
 		// Still some moves on this path available. See where they take us.
 		const results = [];
 		newMoves.forEach(move => {
@@ -137,52 +139,66 @@ export class BoardStateService {
 					}
 				});
 			});
+			console.log(`_AiMove player ${currPlayer}: count`, aiPlayerPieceCount, nonAiPlayerPieceCount, `Score: ${aiPlayerPieceCount + nonAiPlayerPieceCount}`, `Depth: ${depth}`);
 			return aiPlayerPieceCount + nonAiPlayerPieceCount;
 		}
 
-
-
-		if (moveChainIds.length > 1) {
-			console.log('_AiMove before', moveChainIds);
-		}
-
-
-
 		const moveChainCells = convertIdsToCells(board, moveChainIds);
 		const clickableIds = findClickableCells(currPlayer, board, moveChainCells);
+		console.log(`_AiMove player ${currPlayer}: clickableIds`, clickableIds, `Depth: ${depth}`);
 
-		// Player has run out of moves, change turns and continue scoring.
-		if (!clickableIds.length) {
-			const newBoard = cloneBoard(board);
-			const moveChainCells = convertIdsToCells(newBoard, moveChainIds);
-			makeMoves(newBoard, moveChainIds, moveChainCells);
-
-
-			
-			if (moveChainIds.length > 1) {
-				console.log('_AiMove after', moveChainIds, this._AiMove(newBoard, aiPlayer, currPlayer === 2 ? 1 : 2, [], depth - 1));
+		// First move for new player, must get all possible moves and try each.
+		if (!moveChainIds.length) {
+			console.log(`Player ${currPlayer} starts with: `, board, aiPlayer, currPlayer, clickableIds, depth);
+			const scores: AIChoiceTrack[] = [];
+			const results = [];
+			clickableIds.forEach(id => {
+				const firstMoves = findClickableCells(currPlayer, board, convertIdsToCells(board, [id]));
+				firstMoves.forEach(move => {
+					results.push(this._getMoveChains(board, currPlayer, [id, move]));
+				});
+			});
+			console.log('_AiMove results when !moveChainIds.length', results);
+			// Find the score leading from each of the possible move chains.
+			results.forEach(chains => {
+				chains.forEach(chain => {
+					const newBoard = cloneBoard(board);
+					makeMoves(newBoard, chain, convertIdsToCells(newBoard, chain));
+					crownKings(newBoard);
+					console.log('_AiMove chain when !moveChainIds.length', chain);
+					scores.push({ moveChainIds: chain, score: this._AiMove(newBoard, aiPlayer, currPlayer === 2 ? 1 : 2, [], depth - 1) });
+				});
+			});
+			console.log('_AiMove before findMaxScore when !moveChainIds.length', scores);
+			return findMaxScore(scores).score;
+		} else {
+			// Player has run out of moves, change turns and continue scoring.
+			if (!clickableIds.length) {
+				const newBoard = cloneBoard(board);
+				const moveChainCells = convertIdsToCells(newBoard, moveChainIds);
+				makeMoves(newBoard, moveChainIds, moveChainCells);
+				crownKings(newBoard);
+				return this._AiMove(newBoard, aiPlayer, currPlayer === 2 ? 1 : 2, [], depth - 1);
 			}
 
-
-
-			return this._AiMove(newBoard, aiPlayer, currPlayer === 2 ? 1 : 2, [], depth - 1);
-		}
-
-		const scores = [];
-		clickableIds.forEach(id => {
-			// Check scrore if player chooses to end turn, even if more combo jumps are available.
-			const newBoard1 = cloneBoard(board);
-			const moveChainCells = convertIdsToCells(newBoard1, moveChainIds);
-			if (moveChainIds.length) {
-				makeMoves(newBoard1, moveChainIds, moveChainCells);
-				scores.push(this._AiMove(newBoard1, aiPlayer, currPlayer === 2 ? 1 : 2, [], depth - 1));
-			}
-			// Check score when player does choose to make the jump.
-			const newBoard2 = cloneBoard(board);
-			scores.push(this._AiMove(newBoard2, aiPlayer, currPlayer, [...moveChainIds, id], depth - 1));
-		});
+			const scores = [];
+			clickableIds.forEach(id => {
+				// Check scrore if player chooses to end turn, even if more combo jumps are available.
+				const newBoard1 = cloneBoard(board);
+				const moveChainCells = convertIdsToCells(newBoard1, moveChainIds);
+				if (moveChainIds.length > 1) {
+					makeMoves(newBoard1, moveChainIds, moveChainCells);
+					crownKings(newBoard1);
+					scores.push(this._AiMove(newBoard1, aiPlayer, currPlayer === 2 ? 1 : 2, [], depth - 1));
+				}
+				// Check score when player does choose to make the jump.
+				const newBoard2 = cloneBoard(board);
+				console.log(`_AiMove player ${currPlayer}: the extra`, [...moveChainIds, id], `Depth: ${depth}`);
+				scores.push(this._AiMove(newBoard2, aiPlayer, currPlayer, [...moveChainIds, id], depth - 1));
+			});
 		
-		return Math.max(...scores);
+			return Math.max(...scores);
+		}
 	}
 
 	cellClicked(cell: Cell): void {
