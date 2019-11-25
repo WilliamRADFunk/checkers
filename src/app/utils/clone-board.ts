@@ -7,6 +7,7 @@ export function cloneBoard(origBoard: Board): Board {
         newBoard.cellStates[outerIndex] = [];
         row.forEach((cell, innerIndex) => {
             const newCell = {
+                id: cell.id,
                 player: cell.player,
                 playerColor: cell.playerColor,
                 position: cell.position,

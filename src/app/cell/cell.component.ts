@@ -41,7 +41,7 @@ export class CellComponent implements OnDestroy, OnInit {
 			})
 		);
 		this.isOnSquare = (this.cell.position[0] % 2) + (this.cell.position[1] % 2) === 1;
-		this.id = Number(`${this.cell.position[0]}${this.cell.position[1]}`);
+		this.id = this.cell.id;
 	}
 
 	@HostListener('click') onClick() {

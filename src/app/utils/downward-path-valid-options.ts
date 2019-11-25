@@ -24,5 +24,5 @@ export function downwardPathValidOptions(activePlayer: number, cell: Cell, board
             }
         }
     }
-    return ids.map(c => Number(`${c.position[0]}${c.position[1]}`));
+    return ids.map(c => c.id);
 }

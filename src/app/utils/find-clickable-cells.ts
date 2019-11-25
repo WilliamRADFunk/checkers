@@ -9,6 +9,11 @@ import { upwardPathValidOptions } from './upward-path-valid-options';
 export function findClickableCells(direction: number, boardState: Board, moveChainCells: Cell[]): number[] {
     const cellStates = boardState.cellStates;
     const chainLength = moveChainCells.length;
+    // If player's last move was not a jump, no further jumps are possible.
+    if (chainLength > 1 && Math.abs(moveChainCells[chainLength - 2].id - moveChainCells[chainLength - 1].id) < 12) {
+        return [];
+    }
+    // If no moves have been made yet, find all player's pieces and return their ids.
     if (!chainLength) {
         let playerPieces = findPiecesForPlayer(direction, boardState);
         playerPieces = playerPieces.filter(cell => {
@@ -24,7 +29,7 @@ export function findClickableCells(direction: number, boardState: Board, moveCha
         });
         const ids = [];
         playerPieces.forEach(cell => {
-            ids.push(Number(`${cell.position[0]}${cell.position[1]}`));
+            ids.push(cell.id);
         });
         return ids;
     }
