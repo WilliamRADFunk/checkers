@@ -33,15 +33,21 @@ export function findClickableCells(direction: number, boardState: Board, moveCha
         });
         return ids;
     }
+    let possibleMoves = [];
     // If a king, combine upward and downward, otherwise restrict to direction of player.
     if (moveChainCells[0].value === 2) {
-        return [
+        possibleMoves = [
             ...upwardPathValidOptions(direction, moveChainCells[chainLength - 1], cellStates),
-            ...downwardPathValidOptions(direction, moveChainCells[chainLength - 1
-        ], cellStates)];
+            ...downwardPathValidOptions(direction, moveChainCells[chainLength - 1], cellStates)
+        ];
     } else {
-        return direction === 1
+        possibleMoves = direction === 1
             ? upwardPathValidOptions(direction, moveChainCells[chainLength - 1], cellStates)
             : downwardPathValidOptions(direction, moveChainCells[chainLength - 1], cellStates);
     }
+    // If the last move in the move chain was to jump an opponent piece, make sure only additional jumps are available.
+    if (chainLength > 1) {
+        possibleMoves = possibleMoves.filter(move => Math.abs(move - moveChainCells[chainLength - 1].id) > 11);
+    }
+    return possibleMoves;
 }
