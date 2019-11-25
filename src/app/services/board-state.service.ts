@@ -14,6 +14,7 @@ import { makeMove } from '../utils/make-move';
 import { resetBoard } from '../utils/reset-board';
 import { upwardPathValidCheck } from '../utils/upward-path-valid-check';
 import { upwardPathValidOptions } from '../utils/upward-path-valid-options';
+import { makeMoves } from '../utils/make-moves';
 
 @Injectable({
 	providedIn: 'root'
@@ -59,14 +60,15 @@ export class BoardStateService {
 			// Have AI make a move.
 			this._opponentThinking.next(true);
 			this._clickableCellIds.next([]);
+			const result = this._AiDecider(cloneBoard(this._boardState.value), 2, availableMoves);
 
 		} else {
 			this._opponentThinking.next(false);
 		}
 	}
 
-	_AiDecider() {
-
+	_AiDecider(board: Board, aiPlayer: number, startingMoves: number[]): { moveChainCells: Cell[]; score: number; } {
+		return null;
 	}
 
 	cellClicked(cell: Cell): void {
@@ -116,42 +118,9 @@ export class BoardStateService {
 		return this._opponent;
 	}
 
-	makeMoves(): void {
+	makeMoves(moveChainIds?: number[], moveChainCells?: Cell[]): void {
 		this._readyToSubmit.next(false);
-		let idChain = this._moveChainIds.value;
-		let cellChain = this._moveChainCells;
-    	let chainLength = idChain.length;
-		while (chainLength >= 2) {
-			if (Math.abs(Math.floor(idChain[0] / 10) - Math.floor(idChain[1] / 10)) < 2) {
-				makeMove(
-					this._boardState.value,
-					cellChain[0].position[0],
-					cellChain[0].position[1],
-					cellChain[1].position[0],
-					cellChain[1].position[1],
-					[]);
-			} else {
-				const lowerNum = idChain[0] < idChain[1] ? idChain[0] : idChain[1];
-				const diff = Math.abs(idChain[0] - idChain[1]);
-				const eliminatedCellId = lowerNum + Math.floor(diff / 2) + (diff % 2);
-				const row = Math.floor(eliminatedCellId / 10);
-        		const col = eliminatedCellId % 10;
-				const pos = this._boardState.value.cellStates[row][col].position;
-				makeMove(
-					this._boardState.value,
-					cellChain[0].position[0],
-					cellChain[0].position[1],
-					cellChain[1].position[0],
-					cellChain[1].position[1],
-					[pos[0], pos[1]]);
-			}
-			this._moveChainCells.shift();
-			this._moveChainIds.next(this._moveChainIds.value.slice(1));
-
-			idChain = this._moveChainIds.value;
-			cellChain = this._moveChainCells;
-			chainLength = idChain.length;
-		}
+		makeMoves(this._boardState.value, moveChainIds || this._moveChainIds.value, moveChainCells || this._moveChainCells);
 		this._changeTurn();
 	}
 
