@@ -1,51 +1,41 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 
-import { AIChoiceTrack } from '../models/ai-choice-track';
 import { Board } from '../models/board';
 import { Cell } from '../models/cell';
+import { aiDecider } from '../utils/ai-decider';
 import { checkForEndGame } from '../utils/check-for-endgame';
 import { cloneBoard } from '../utils/clone-board';
 import { convertIdsToCells } from '../utils/convert-ids-to-cells';
 import { crownKings } from '../utils/crown-kings';
-import { downwardPathValidCheck } from '../utils/downward-path-valid-check';
-import { downwardPathValidOptions } from '../utils/downward-path-valid-options';
 import { findClickableCells } from '../utils/find-clickable-cells';
-import { findMaxScore } from '../utils/find-max-score';
-import { findPiecesForPlayer } from '../utils/find-pieces-for-player';
-import { makeMove } from '../utils/make-move';
 import { makeMoves } from '../utils/make-moves';
 import { resetBoard } from '../utils/reset-board';
-import { upwardPathValidCheck } from '../utils/upward-path-valid-check';
-import { upwardPathValidOptions } from '../utils/upward-path-valid-options';
-import { convertBoardToKey } from '../utils/convert-board-to-key';
-import { checkForCycles } from '../utils/check-for-cycles';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class BoardStateService {
 	private readonly _activePlayer: BehaviorSubject<number> = new BehaviorSubject<number>(1);
-	private readonly _opponentThinking: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+	private _aiDifficulty = 1;
 	private readonly _boardState: BehaviorSubject<Board> = new BehaviorSubject<Board>(resetBoard());
 	private readonly _clickableCellIds: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
 	// 0 == not over, 1 == player 1 wins, 2 == player 2 wins.
 	private readonly _gameStatus: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-	private readonly _readyToSubmit: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+	private _memoizationTable: { [key: string]: number } = {};
+	private _moveChainCells: Cell[] = [];
 	private readonly _moveChainIds: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
 	// 1 == Local human player, 2 == AI player, 3 == Online human player.
 	private _opponent: number = 1;
+	private readonly _opponentThinking: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+	private readonly _readyToSubmit: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 	readonly currActivePlayer: Observable<number> = this._activePlayer.asObservable();
-	readonly currOpponentThinking: Observable<boolean> = this._opponentThinking.asObservable();
 	readonly currBoardState: Observable<Board> = this._boardState.asObservable();
 	readonly currClickableCellIds: Observable<number[]> = this._clickableCellIds.asObservable();
 	readonly currGameStatus: Observable<number> = this._gameStatus.asObservable();
 	readonly currMoveChainIds: Observable<number[]> = this._moveChainIds.asObservable();
+	readonly currOpponentThinking: Observable<boolean> = this._opponentThinking.asObservable();
 	readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
-
-	private _moveChainCells: Cell[] = [];
-	private _memoizationTable = {};
-	private _aiDifficulty = 1;
 
 	constructor() {
 		this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
@@ -68,112 +58,11 @@ export class BoardStateService {
 			this._opponentThinking.next(true);
 			this._clickableCellIds.next([]);
 			setTimeout(() => {
-				const result = this._AiDecider(cloneBoard(this._boardState.value), 2, 2, availablePieces);
+				const result = aiDecider(cloneBoard(this._boardState.value), 2, 2, availablePieces, this._aiDifficulty, this._memoizationTable);
 				this.makeMoves(result.moveChainIds, convertIdsToCells(this._boardState.value, result.moveChainIds));
 			}, 1000);
 		} else {
 			this._opponentThinking.next(false);
-		}
-	}
-
-	_AiDecider(board: Board, aiPlayer: number, currPlayer: number, startingPieces: number[]): AIChoiceTrack {
-		const scores: AIChoiceTrack[] = [];
-		this._getAllMoveChains(board, aiPlayer, startingPieces, 4).forEach(chain => {
-			const newBoard = cloneBoard(board);
-			makeMoves(newBoard, chain, convertIdsToCells(newBoard, chain));
-			crownKings(newBoard);
-			const bKey = convertBoardToKey(newBoard, currPlayer === 2 ? 1 : 2);
-			if (undefined === this._memoizationTable[bKey]) {
-				this._memoizationTable[bKey] = this._AiMove(newBoard, aiPlayer, currPlayer === 2 ? 1 : 2, this._aiDifficulty + 1);
-			}
-			scores.push({ moveChainIds: chain, score: this._memoizationTable[bKey] });
-		});
-		return findMaxScore(scores);
-	}
-
-	_getAllMoveChains(board: Board, currPlayer: number, startingPieces: number[], depth: number): number[][] {
-		const results = [];
-		startingPieces.forEach(id => {
-			const firstMoves = findClickableCells(currPlayer, board, convertIdsToCells(board, [id]));
-			firstMoves.forEach(move => {
-				results.push(this._getMoveChains(board, currPlayer, [id, move], depth));
-			});
-		});
-		const allChains = [];
-		results.forEach(chains => {
-			chains.forEach(chain => {
-				allChains.push(chain);
-			});
-		});
-		return allChains;
-	}
-
-	_getMoveChains(board: Board, currPlayer: number, previousChain: number[], depth: number): number[][] {
-		const newMoves = findClickableCells(currPlayer, board, convertIdsToCells(board, previousChain));
-		// Base case: No moves left to make along this path.
-		if (!newMoves.length) {
-			return [previousChain];
-		}
-		// Still some moves on this path available. See where they take us.
-		const results = [];
-		newMoves.forEach(move => {
-			const prospectiveChain = [...previousChain, move];
-			if (!checkForCycles(prospectiveChain)) {
-				this._getMoveChains(board, currPlayer, [...previousChain, move], depth).forEach(chain => {
-					results.push(chain);
-				});
-			}
-		});
-		return [previousChain, ...results];
-	}
-
-	_AiMove(board: Board, aiPlayer: number, currPlayer: number, depth: number): number {
-		const moveChainCells = convertIdsToCells(board, []);
-		const clickableIds = findClickableCells(currPlayer, board, moveChainCells);
-		// First move of this player's new turn. Check to see if game is already over for this board configuration.
-		if (!clickableIds.length) {
-			const gameStatus = checkForEndGame(currPlayer, clickableIds.length);
-			const score = ((gameStatus === aiPlayer) ? Infinity : -Infinity) - depth;
-			return score;
-		}
-		// Avoids exceeding max callstack. Also allows for variable ai difficulty.
-		if (aiPlayer === currPlayer && depth <= 0) {
-			let aiPlayerPieceCount = 0;
-			let nonAiPlayerPieceCount = 0;
-
-			board.cellStates.forEach(row => {
-				row.forEach(cell => {
-					if (!cell.player) {
-						return;
-					}
-					if (cell.player === aiPlayer) {
-						aiPlayerPieceCount += (10 * cell.value);
-					} else {
-						nonAiPlayerPieceCount -= (10 * cell.value);
-					}
-				});
-			});
-			const score = aiPlayerPieceCount + nonAiPlayerPieceCount;
-			return score;
-		}
-
-		const scores = [];
-		this._getAllMoveChains(board, currPlayer, clickableIds, depth).forEach(chain => {
-			const newBoard = cloneBoard(board);
-			makeMoves(newBoard, chain, convertIdsToCells(newBoard, chain));
-			crownKings(newBoard);
-			const bKey = convertBoardToKey(newBoard, currPlayer === 2 ? 1 : 2);
-			if (undefined !== this._memoizationTable[bKey]) {
-				scores.push(this._memoizationTable[bKey]);
-			} else {
-				this._memoizationTable[bKey] = this._AiMove(newBoard, aiPlayer, currPlayer === 2 ? 1 : 2, depth - 1);
-				scores.push(this._memoizationTable[bKey]);
-			}
-		});
-		if (currPlayer === aiPlayer) {
-			return Math.max(...scores);
-		} else {
-			return Math.min(...scores);
 		}
 	}
 
