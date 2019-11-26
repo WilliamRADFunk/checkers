@@ -67,12 +67,15 @@ export class AppComponent implements OnInit {
 		);
 	}
 
+	changeDifficulty(e: number): void {
+		this._boardStateService.changeDifficulty(e);
+	}
+
 	changeOpponent(e: number) {
 		this._boardStateService.changeOpponent(e);
 	}
 
     enterHelp(e: boolean) {
-		console.log('enterHelp');
         this.helpMode = true;
     }
 

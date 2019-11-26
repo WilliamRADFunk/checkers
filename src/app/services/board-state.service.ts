@@ -45,6 +45,7 @@ export class BoardStateService {
 
 	private _moveChainCells: Cell[] = [];
 	private _memoizationTable = {};
+	private _aiDifficulty = 1;
 
 	constructor() {
 		this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
@@ -67,9 +68,7 @@ export class BoardStateService {
 			this._opponentThinking.next(true);
 			this._clickableCellIds.next([]);
 			setTimeout(() => {
-				console.log('_changeTurn availablePieces', availablePieces);
 				const result = this._AiDecider(cloneBoard(this._boardState.value), 2, 2, availablePieces);
-				console.log('_changeTurn', result);
 				this.makeMoves(result.moveChainIds, convertIdsToCells(this._boardState.value, result.moveChainIds));
 			}, 1000);
 		} else {
@@ -80,13 +79,12 @@ export class BoardStateService {
 	_AiDecider(board: Board, aiPlayer: number, currPlayer: number, startingPieces: number[]): AIChoiceTrack {
 		const scores: AIChoiceTrack[] = [];
 		this._getAllMoveChains(board, aiPlayer, startingPieces, 4).forEach(chain => {
-			console.log('_AiDecider chain', chain);
 			const newBoard = cloneBoard(board);
 			makeMoves(newBoard, chain, convertIdsToCells(newBoard, chain));
 			crownKings(newBoard);
 			const bKey = convertBoardToKey(newBoard, currPlayer === 2 ? 1 : 2);
 			if (undefined === this._memoizationTable[bKey]) {
-				this._memoizationTable[bKey] = this._AiMove(newBoard, aiPlayer, currPlayer === 2 ? 1 : 2, 4);
+				this._memoizationTable[bKey] = this._AiMove(newBoard, aiPlayer, currPlayer === 2 ? 1 : 2, this._aiDifficulty + 1);
 			}
 			scores.push({ moveChainIds: chain, score: this._memoizationTable[bKey] });
 		});
@@ -212,6 +210,11 @@ export class BoardStateService {
 			this._readyToSubmit.next(false);
 		}
 		this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
+	}
+
+	changeDifficulty(difficulty: number): void {
+		// To prevent the AI from getting smarter with each game, it must have its memory wiped after each play.
+		this._aiDifficulty = difficulty;
 	}
 
 	changeOpponent(opponent: number): void {

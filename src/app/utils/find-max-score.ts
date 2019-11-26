@@ -1,7 +1,6 @@
 import { AIChoiceTrack } from '../models/ai-choice-track';
 
 export function findMaxScore(tracks: AIChoiceTrack[]): AIChoiceTrack {
-    console.log('findMaxScore', tracks);
     tracks = tracks.filter(track => track.moveChainIds.length >= 2);
     let maxAIChoiceTrack = tracks.shift();
     while (tracks[0]) {

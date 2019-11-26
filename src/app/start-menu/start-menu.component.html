@@ -13,10 +13,21 @@
                         (click)="startGame()"
                         ngbTooltip="Create a game with {{activeLevel}} level{{(activeLevel - 1) ? 's' : ''}}"
                         tooltipClass="checkers-tooltip"
-                        placement="bottom"
+                        placement="top"
                         type="button">Start Game</button>
                 </div>
             </div>
+        </div>
+    </div>
+	<div class="d-flex justify-content-center">
+		<div class="col text-center text-white mt-5">
+            <button
+                class="btn btn-sm btn-light btn-default text-shadow shadow rounded"
+                (click)="enterHelp()"
+                ngbTooltip="See Help Screen"
+                tooltipClass="checkers-tooltip"
+                placement="top"
+                type="button">Tutorial</button>
         </div>
     </div>
 	<div class="d-flex justify-content-center">
@@ -35,20 +46,32 @@
                     container="body"
                     [ngbTooltip]="getTooltipMsg(choice)"
                     tooltipClass="checkers-tooltip"
-                    placement="bottom"
+                    placement="top"
                     type="button">{{ choice }}</button>
             </div>
         </div>
     </div>
-	<div class="d-flex justify-content-center">
-		<div class="col text-center text-white mt-5">
-            <button
-                class="btn btn-sm btn-light btn-default text-shadow shadow rounded"
-                (click)="enterHelp()"
-                ngbTooltip="See Help Screen"
-                tooltipClass="checkers-tooltip"
-                placement="bottom"
-                type="button">Tutorial</button>
+    <ng-container *ngIf="activeOpponent === 'AI'">
+        <div class="d-flex justify-content-center">
+            <div class="col text-center text-white mt-5">
+                <span class="h5 mt-5">AI Difficulty Level</span>
+            </div>
         </div>
-    </div>
+        <div class="d-flex justify-content-center">
+            <div class="col text-center text-white mt-1">
+                <div class="btn-group btn-group-lg d-lg-inline-block">
+                    <button *ngFor="let choice of [1, 2, 3, 4]"
+                        class="btn text-shadow shadow"
+                        [class.btn-success]="activeDifficulty === choice"
+                        [class.btn-info]="activeDifficulty !== choice"
+                        (click)="difficultyChange(choice)"
+                        container="body"
+                        [ngbTooltip]="getTooltipDiffMsg(choice)"
+                        tooltipClass="checkers-tooltip"
+                        placement="top"
+                        type="button">{{ choice }}</button>
+                </div>
+            </div>
+        </div>
+    </ng-container>
 </div>

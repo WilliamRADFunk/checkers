@@ -6,7 +6,9 @@ import { Component, EventEmitter, Output, OnInit } from '@angular/core';
     styleUrls: ['./start-menu.component.scss']
 })
 export class StartMenuComponent implements OnInit {
+    activeDifficulty: number = 1;
     activeOpponent: string = 'Local Human';
+    @Output() difficultySelected: EventEmitter<number> = new EventEmitter<number>();
     @Output() helpSelected: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() opponentSelected: EventEmitter<number> = new EventEmitter<number>();
     @Output() startSelected: EventEmitter<void> = new EventEmitter<void>();
@@ -14,11 +16,32 @@ export class StartMenuComponent implements OnInit {
     constructor() { }
 
     ngOnInit() {
+        this.difficultySelected.emit(1);
         this.opponentSelected.emit(1);
     }
 
     enterHelp() {
         this.helpSelected.emit(true);
+    }
+
+    getTooltipDiffMsg(choice: number): string {
+        switch (choice) {
+            case 1: {
+                return 'The AI will be clumsy and prone to the occasional mistake.';
+            }
+            case 2: {
+                return 'The AI won\'t be much of a planner, but it won\'t be complacent.';
+            }
+            case 3: {
+                return 'The AI will be thinking ahead. An experienced human player would be at this level.';
+            }
+            case 4: {
+                return 'The AI will have no mercy. Chance of success against this opponent is small.';
+            }
+            default: {
+                return 'Not a valid option';
+            }
+        }
     }
 
     getTooltipMsg(choice: string): string {
@@ -36,6 +59,11 @@ export class StartMenuComponent implements OnInit {
                 return 'Not a valid option';
             }
         }
+    }
+
+    difficultyChange(choice: number): void {
+        this.activeDifficulty = choice;
+        this.difficultySelected.emit(choice);
     }
 
     opponentChange(choice: string): void {
