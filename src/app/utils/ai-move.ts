@@ -56,6 +56,16 @@ export function aiMove(
             memoizationTable[bKey] = aiMove(newBoard, aiPlayer, currPlayer === 2 ? 1 : 2, depth - 1, memoizationTable);
             scores.push(memoizationTable[bKey]);
         }
+
+        // Pruning the tree. If non-ai player, if minimum is already found stop looking.
+        // If ai-player and max is already found, stop looking.
+        if (memoizationTable[bKey] === -Infinity && currPlayer !== aiPlayer) {
+            console.log('aiMove bail early for min');
+            return memoizationTable[bKey];
+        } else if (memoizationTable[bKey] === Infinity && currPlayer === aiPlayer) {
+            console.log('aiMove bail early for max');
+            return memoizationTable[bKey];
+        }
     });
     if (currPlayer === aiPlayer) {
         return Math.max(...scores);

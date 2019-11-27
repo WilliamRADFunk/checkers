@@ -32,6 +32,16 @@ export function aiDecider(
                 memoizationTable);
         }
         scores.push({ moveChainIds: chain, score: memoizationTable[bKey] });
+
+        // Pruning the tree. If non-ai player, if minimum is already found stop looking.
+        // If ai-player and max is already found, stop looking.
+        if (memoizationTable[bKey] === -Infinity && currPlayer !== aiPlayer) {
+            console.log('aiDecider bail early for min');
+            return { moveChainIds: chain, score: memoizationTable[bKey] };
+        } else if (memoizationTable[bKey] === Infinity && currPlayer === aiPlayer) {
+            console.log('aiDecider bail early for max');
+            return { moveChainIds: chain, score: memoizationTable[bKey] };
+        }
     });
     return findMaxScore(scores);
 }

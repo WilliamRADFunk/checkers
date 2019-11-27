@@ -59,6 +59,7 @@ export class BoardStateService {
 			this._clickableCellIds.next([]);
 			setTimeout(() => {
 				const result = aiDecider(cloneBoard(this._boardState.value), 2, 2, availablePieces, this._aiDifficulty, this._memoizationTable);
+				console.log('Final Move: ', result.moveChainIds);
 				this.makeMoves(result.moveChainIds, convertIdsToCells(this._boardState.value, result.moveChainIds));
 			}, 1000);
 		} else {

@@ -14,6 +14,7 @@ export function getMoveChains(board: Board, currPlayer: number, previousChain: n
     newMoves.forEach(move => {
         const prospectiveChain = [...previousChain, move];
         if (!checkForCycles(prospectiveChain)) {
+            console.log('prospectiveChain', prospectiveChain);
             getMoveChains(board, currPlayer, [...previousChain, move], depth).forEach(chain => {
                 results.push(chain);
             });
