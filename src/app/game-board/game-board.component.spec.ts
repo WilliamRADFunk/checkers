@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GameBoardComponent } from './game-board.component';
 import { CellComponent } from '../cell/cell.component';
+import { ManComponent } from '../man/man.component';
 
 describe('GameBoardComponent', () => {
     let component: GameBoardComponent;
@@ -11,7 +12,8 @@ describe('GameBoardComponent', () => {
         TestBed.configureTestingModule({
             declarations: [
                 GameBoardComponent,
-                CellComponent
+                CellComponent,
+                ManComponent
             ]
         }).compileComponents();
     }));

@@ -4,6 +4,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from './app.component';
 import { GameBoardComponent } from './game-board/game-board.component';
 import { CellComponent } from './cell/cell.component';
+import { StartMenuComponent } from './start-menu/start-menu.component';
+import { HelpScreenComponent } from './help-screen/help-screen.component';
+import { ManComponent } from './man/man.component';
 
 describe('AppComponent', () => {
     beforeEach(async(() => {
@@ -14,7 +17,10 @@ describe('AppComponent', () => {
             declarations: [
                 AppComponent,
                 GameBoardComponent,
-                CellComponent
+                CellComponent,
+                StartMenuComponent,
+                HelpScreenComponent,
+                ManComponent
             ],
         }).compileComponents();
     }));

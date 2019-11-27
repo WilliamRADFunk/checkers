@@ -3,6 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { CellComponent } from './cell.component';
+import { ManComponent } from '../man/man.component';
 
 describe('CellComponent', () => {
     let component: CellComponent;
@@ -14,7 +15,10 @@ describe('CellComponent', () => {
                 NgbModule,
                 RouterTestingModule
             ],
-            declarations: [ CellComponent ]
+            declarations: [
+                CellComponent,
+                ManComponent
+            ]
         }).compileComponents();
     }));
 
@@ -22,12 +26,12 @@ describe('CellComponent', () => {
         fixture = TestBed.createComponent(CellComponent);
         component = fixture.componentInstance;
         component.cell = {
-			id: 0,
-			player: 0,
-			playerColor: '',
-			position: [0, 0],
-			value: 0
-		};
+            id: 0,
+            player: 0,
+            playerColor: '',
+            position: [0, 0],
+            value: 0
+        };
         fixture.detectChanges();
     });
 
