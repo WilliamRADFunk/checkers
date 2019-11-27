@@ -12,20 +12,20 @@ import { StartMenuComponent } from './start-menu/start-menu.component';
 import { HelpScreenComponent } from './help-screen/help-screen.component';
 
 @NgModule({
-	declarations: [
-		AppComponent,
-		GameBoardComponent,
-		CellComponent,
-		ManComponent,
-		StartMenuComponent,
-		HelpScreenComponent
-	],
-	imports: [
-		BrowserModule,
-		FormsModule,
-		NgbModule.forRoot()
-	],
-	providers: [ BoardStateService ],
-	bootstrap: [ AppComponent ]
+    declarations: [
+        AppComponent,
+        GameBoardComponent,
+        CellComponent,
+        ManComponent,
+        StartMenuComponent,
+        HelpScreenComponent
+    ],
+    imports: [
+        BrowserModule,
+        FormsModule,
+        NgbModule
+    ],
+    providers: [ BoardStateService ],
+    bootstrap: [ AppComponent ]
 })
 export class AppModule { }

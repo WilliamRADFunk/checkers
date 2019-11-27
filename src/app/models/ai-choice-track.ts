@@ -1,4 +1,4 @@
 export interface AIChoiceTrack {
-	moveChainIds: number[];
-	score: number;
+    moveChainIds: number[];
+    score: number;
 }

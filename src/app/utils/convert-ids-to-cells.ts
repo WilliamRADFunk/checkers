@@ -2,7 +2,7 @@ import { Board } from '../models/board';
 import { Cell } from '../models/cell';
 
 export function convertIdsToCells(board: Board, moveChainIds: number[]): Cell[] {
-    const moveChainCells = []
+    const moveChainCells = [];
     moveChainIds.forEach(id => {
         const row = Math.floor(id / 10);
         const col = id % 10;
