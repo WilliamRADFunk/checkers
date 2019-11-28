@@ -1,11 +1,11 @@
 {
 	"name": "checkers",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"scripts": {
 		"ng": "ng",
 		"start": "ng serve",
 		"build": "run-s lint test clean build:ng copy:configs",
-		"build:ng": "ng build",
+		"build:ng": "ng build checkers --prod --base-href=/applications/checkers/",
 		"clean": "rimraf dist/",
 		"copy:configs": "cpx src/assets/configs/.htaccess dist/checkers/",
 		"test": "ng test --code-coverage --watch=false",

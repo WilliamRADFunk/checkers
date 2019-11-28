@@ -1,0 +1,39 @@
+{
+    "name": "checkers",
+    "version": "0.1.0",
+    "description": "Nodejs websocket backend option for multiplayer checkers",
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc --outDir build",
+        "clean:docs": "rimraf docs/",
+        "lint": "tslint -c tslint.json -p tsconfig.json --fix",
+        "readme": "run-s clean:docs typedoc",
+        "start": "ts-node server.ts",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "tsc": "tsc",
+        "typedoc": "typedoc --theme markdown --mode file --target ES6 --readme none --out docs src/"
+    },
+    "author": "WILLIAMRADFUNK",
+    "license": "ISC",
+    "dependencies": {
+        "cors": "^2.8.4",
+        "es6-promise": "^4.2.8",
+        "express": "^4.17.1",
+        "graceful-fs": "^4.2.2",
+        "rxjs": "^6.5.2",
+        "socket.io": "^2.3.0"
+    },
+    "devDependencies": {
+        "@types/cors": "^2.8.5",
+        "@types/express": "^4.17.0",
+        "@types/graceful-fs": "^4.1.3",
+        "@types/node": "^12.6.8",
+        "npm-run-all": "^4.1.3",
+        "rimraf": "^2.6.2",
+        "ts-node": "^4.1.0",
+        "tslint": "^5.11.0",
+        "typedoc": "^0.15.0",
+        "typedoc-plugin-markdown": "^2.1.0",
+        "typescript": "^3.5.3"
+    }
+}
