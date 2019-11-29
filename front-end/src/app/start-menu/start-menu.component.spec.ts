@@ -17,6 +17,8 @@ describe('StartMenuComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(StartMenuComponent);
     component = fixture.componentInstance;
+    component.gameroomCode = '';
+    component.playerNumber = 1;
     fixture.detectChanges();
   });
 

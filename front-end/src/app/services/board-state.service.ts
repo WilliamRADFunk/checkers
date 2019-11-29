@@ -48,7 +48,6 @@ export class BoardStateService {
     readonly currOpponentThinking: Observable<boolean> = this._opponentThinking.asObservable();
     readonly currPlayerNumber: Observable<number> = this._playersNumber.asObservable();
     readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
-    
 
     constructor() {
         this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));

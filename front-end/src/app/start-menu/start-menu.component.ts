@@ -9,7 +9,7 @@ export class StartMenuComponent implements OnInit {
     activeDifficulty: number = 1;
     activeOnlineMethod: number = 1;
     activeOpponent: string = 'Local Human';
-    @Input() gameroomCode: number;
+    @Input() gameroomCode: string;
     @Input() playerNumber: number;
 
     @Output() difficultySelected: EventEmitter<number> = new EventEmitter<number>();
