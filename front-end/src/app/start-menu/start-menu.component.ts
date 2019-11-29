@@ -67,10 +67,10 @@ export class StartMenuComponent implements OnInit {
     getTooltipOMMsg(choice: number): string {
         switch (choice) {
             case 1: {
-                return 'Host a game online with a friend (give randomly generated code to friend).';
+                return 'Host a game online with someone you know (give the gameroom code to the other person).';
             }
             case 2: {
-                return 'Join a game online with a friend (enter the code they give you to enter that gameroom).';
+                return 'Join a game online with someone you know (enter the code they give you to enter that gameroom).';
             }
             case 3: {
                 return 'Be randomly matched with another player online.';

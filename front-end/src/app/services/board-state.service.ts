@@ -30,16 +30,21 @@ export class BoardStateService {
     private _opponent: number = 1;
     private readonly _opponentThinking: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     private readonly _readyToSubmit: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    private readonly _playersNumber: BehaviorSubject<number> = new BehaviorSubject<number>(Math.random() > 0.5 ? 1 : 2);
     readonly currActivePlayer: Observable<number> = this._activePlayer.asObservable();
     readonly currBoardState: Observable<Board> = this._boardState.asObservable();
     readonly currClickableCellIds: Observable<number[]> = this._clickableCellIds.asObservable();
     readonly currGameStatus: Observable<number> = this._gameStatus.asObservable();
     readonly currMoveChainIds: Observable<number[]> = this._moveChainIds.asObservable();
     readonly currOpponentThinking: Observable<boolean> = this._opponentThinking.asObservable();
+    readonly currPlayerNumber: Observable<number> = this._playersNumber.asObservable();
     readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
 
     constructor() {
         this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
+        if (this._opponent === 2 && this._activePlayer.value !== this._playersNumber.value) {
+            this._changeTurn();
+        }
     }
 
     _changeTurn() {
@@ -53,7 +58,7 @@ export class BoardStateService {
 
         this._gameStatus.next(checkForEndGame(this._activePlayer.value, this._clickableCellIds.value.length));
 
-        if (!this._gameStatus.value && this._opponent === 2 && this._activePlayer.value === 2) {
+        if (!this._gameStatus.value && this._opponent === 2 && this._activePlayer.value !== this._playersNumber.value) {
             const availablePieces = this._clickableCellIds.value;
             // Have AI make a move.
             this._opponentThinking.next(true);
