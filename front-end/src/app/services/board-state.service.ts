@@ -25,6 +25,7 @@ export class BoardStateService {
     private _memoizationTable: { [key: string]: number } = {};
     private _moveChainCells: Cell[] = [];
     private readonly _moveChainIds: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
+    private _onlineMethod = 1;
     // 1 == Local human player, 2 == AI player, 3 == Online human player.
     private _opponent: number = 1;
     private readonly _opponentThinking: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -113,12 +114,20 @@ export class BoardStateService {
         this._aiDifficulty = difficulty;
     }
 
+    changeOnlineMethod(method: number): void {
+        this._onlineMethod = method;
+    }
+
     changeOpponent(opponent: number): void {
         this._opponent = opponent;
     }
 
     getActivePlayer(): number {
         return this._activePlayer.value;
+    }
+
+    getOnlineMethod(): number {
+        return this._onlineMethod;
     }
 
     getOpponent(): number {

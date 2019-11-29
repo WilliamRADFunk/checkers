@@ -71,6 +71,10 @@ export class AppComponent implements OnInit {
         this._boardStateService.changeDifficulty(e);
     }
 
+    changeOnlineMethod(e: number): void {
+        this._boardStateService.changeOnlineMethod(e);
+    }
+
     changeOpponent(e: number) {
         this._boardStateService.changeOpponent(e);
     }

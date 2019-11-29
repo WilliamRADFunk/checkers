@@ -7,9 +7,11 @@ import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 })
 export class StartMenuComponent implements OnInit {
     activeDifficulty: number = 1;
+    activeOnlineMethod: number = 1;
     activeOpponent: string = 'Local Human';
     @Output() difficultySelected: EventEmitter<number> = new EventEmitter<number>();
     @Output() helpSelected: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() onlineMethodSelected: EventEmitter<number> = new EventEmitter<number>();
     @Output() opponentSelected: EventEmitter<number> = new EventEmitter<number>();
     @Output() startSelected: EventEmitter<void> = new EventEmitter<void>();
 
@@ -18,6 +20,7 @@ export class StartMenuComponent implements OnInit {
     ngOnInit() {
         this.difficultySelected.emit(1);
         this.opponentSelected.emit(1);
+        this.onlineMethodSelected.emit(1);
     }
 
     enterHelp() {
@@ -61,9 +64,31 @@ export class StartMenuComponent implements OnInit {
         }
     }
 
+    getTooltipOMMsg(choice: number): string {
+        switch (choice) {
+            case 1: {
+                return 'Host a game online with a friend (give randomly generated code to friend).';
+            }
+            case 2: {
+                return 'Join a game online with a friend (enter the code they give you to enter that gameroom).';
+            }
+            case 3: {
+                return 'Be randomly matched with another player online.';
+            }
+            default: {
+                return 'Not a valid option';
+            }
+        }
+    }
+
     difficultyChange(choice: number): void {
         this.activeDifficulty = choice;
         this.difficultySelected.emit(choice);
+    }
+
+    onlineMethodChange(choice: number): void {
+        this.activeOnlineMethod = choice;
+        this.onlineMethodSelected.emit(choice);
     }
 
     opponentChange(choice: string): void {

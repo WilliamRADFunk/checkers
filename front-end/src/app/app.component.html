@@ -45,6 +45,7 @@
 			*ngIf="showStartMenu()"
 			(difficultySelected)="changeDifficulty($event)"
 			(helpSelected)="enterHelp($event)"
+			(onlineMethodSelected)="changeOnlineMethod($event)"
             (opponentSelected)="changeOpponent($event)"
             (startSelected)="startGame()"></checkers-start-menu>
 		<div *ngIf="!showStartMenu() && !helpMode" class="row no-gutters mt-1">
