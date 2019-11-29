@@ -29,8 +29,8 @@ export class BoardStateService {
     // 1 == Local human player, 2 == AI player, 3 == Online human player.
     private _opponent: number = 1;
     private readonly _opponentThinking: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    private readonly _readyToSubmit: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     private readonly _playersNumber: BehaviorSubject<number> = new BehaviorSubject<number>(Math.random() > 0.5 ? 1 : 2);
+    private readonly _readyToSubmit: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     readonly currActivePlayer: Observable<number> = this._activePlayer.asObservable();
     readonly currBoardState: Observable<Board> = this._boardState.asObservable();
     readonly currClickableCellIds: Observable<number[]> = this._clickableCellIds.asObservable();
@@ -39,15 +39,15 @@ export class BoardStateService {
     readonly currOpponentThinking: Observable<boolean> = this._opponentThinking.asObservable();
     readonly currPlayerNumber: Observable<number> = this._playersNumber.asObservable();
     readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
+    
+    private readonly _opponentPlayerNumber: BehaviorSubject<number> = new BehaviorSubject<number>(this._playersNumber.value === 2 ? 1 : 2);
+    readonly currOpponentPlayerNumber: Observable<number> = this._opponentPlayerNumber.asObservable();
 
     constructor() {
         this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
-        if (this._opponent === 2 && this._activePlayer.value !== this._playersNumber.value) {
-            this._changeTurn();
-        }
     }
 
-    _changeTurn() {
+    private _changeTurn(): void {
         this._moveChainCells.length = 0;
         this._moveChainIds.next([]);
 
@@ -58,28 +58,31 @@ export class BoardStateService {
 
         this._gameStatus.next(checkForEndGame(this._activePlayer.value, this._clickableCellIds.value.length));
 
-        if (!this._gameStatus.value && this._opponent === 2 && this._activePlayer.value !== this._playersNumber.value) {
-            const availablePieces = this._clickableCellIds.value;
-            // Have AI make a move.
-            this._opponentThinking.next(true);
-            this._clickableCellIds.next([]);
-            setTimeout(() => {
-                const result = aiDecider(
-                    cloneBoard(this._boardState.value),
-                    2,
-                    2,
-                    availablePieces,
-                    this._aiDifficulty,
-                    this._memoizationTable);
-                console.log('Final Move: ', result.moveChainIds);
-                this.makeMoves(result.moveChainIds, convertIdsToCells(this._boardState.value, result.moveChainIds));
-            }, 1000);
+        if (!this._gameStatus.value && this._opponent === 2 && this._activePlayer.value === this._opponentPlayerNumber.value) {
+            this._takeAITurn();
         } else {
             this._opponentThinking.next(false);
         }
     }
 
-    cellClicked(cell: Cell): void {
+    private _takeAITurn(): void {
+        const availablePieces = this._clickableCellIds.value;
+        // Have AI make a move.
+        this._opponentThinking.next(true);
+        this._clickableCellIds.next([]);
+        setTimeout(() => {
+            const result = aiDecider(
+                cloneBoard(this._boardState.value),
+                this._opponentPlayerNumber.value,
+                this._activePlayer.value,
+                availablePieces,
+                this._aiDifficulty,
+                this._memoizationTable);
+            this.makeMoves(result.moveChainIds, convertIdsToCells(this._boardState.value, result.moveChainIds));
+        }, 2000);
+    }
+
+    public cellClicked(cell: Cell): void {
         const chain = [];
         const index = this._moveChainCells.indexOf(cell);
         if (!index) {
@@ -114,38 +117,51 @@ export class BoardStateService {
         this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
     }
 
-    changeDifficulty(difficulty: number): void {
+    public changeDifficulty(difficulty: number): void {
         // To prevent the AI from getting smarter with each game, it must have its memory wiped after each play.
         this._aiDifficulty = difficulty;
     }
 
-    changeOnlineMethod(method: number): void {
+    public changeOnlineMethod(method: number): void {
         this._onlineMethod = method;
     }
 
-    changeOpponent(opponent: number): void {
+    public changeOpponent(opponent: number): void {
         this._opponent = opponent;
     }
 
-    getActivePlayer(): number {
+    public changePlayerNumber(playerNumber: number): void {
+        this._playersNumber.next(playerNumber);
+        this._opponentPlayerNumber.next(playerNumber === 1 ? 2 : 1);
+        this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
+        if (this._opponent === 2 && this._activePlayer.value === this._opponentPlayerNumber.value) {
+            this._takeAITurn();
+        }
+    }
+
+    public getActivePlayer(): number {
         return this._activePlayer.value;
     }
 
-    getOnlineMethod(): number {
+    public getOnlineMethod(): number {
         return this._onlineMethod;
     }
 
-    getOpponent(): number {
+    public getOpponent(): number {
         return this._opponent;
     }
 
-    makeMoves(moveChainIds?: number[], moveChainCells?: Cell[]): void {
+    public makeMoves(moveChainIds?: number[], moveChainCells?: Cell[]): void {
         this._readyToSubmit.next(false);
         makeMoves(this._boardState.value, moveChainIds || this._moveChainIds.value, moveChainCells || this._moveChainCells);
         this._changeTurn();
     }
 
-    reset() {
+    public reset(playerNumber?: number, opponentPlayerNumber?: number): void {
+        this._opponentThinking.next(false);
+        this._readyToSubmit.next(false);
+        this._playersNumber.next(playerNumber || Math.random() > 0.5 ? 1 : 2);
+        this._opponentPlayerNumber.next(opponentPlayerNumber || this._playersNumber.value === 1 ? 2 : 1);
         this._gameStatus.next(0);
         this._activePlayer.next(1);
         this._boardState.next(resetBoard());

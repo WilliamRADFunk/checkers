@@ -20,6 +20,8 @@ export class AppComponent implements OnInit {
     public gameOverAck: boolean = true;
     public helpMode: boolean = false;
     public opponentIsThinking: boolean = false;
+    public opponentPlayerNumber: number;
+    public playerNumber: number;
 
     constructor(
         private readonly _boardStateService: BoardStateService,
@@ -29,13 +31,19 @@ export class AppComponent implements OnInit {
         this._subscriptionSetup();
     }
 
-    private _subscriptionSetup() {
+    private _subscriptionSetup(): void {
         this.subscriptions.push(
             this._boardStateService.currOpponentThinking.subscribe(isThinking => {
                 this.opponentIsThinking = isThinking;
             }),
             this._boardStateService.currActivePlayer.pipe(filter(x => !!x)).subscribe((ap: number) => {
                 this.activePlayer = ap;
+            }),
+            this._boardStateService.currPlayerNumber.pipe(filter(x => !!x)).subscribe((pn: number) => {
+                this.playerNumber = pn;
+            }),
+            this._boardStateService.currPlayerNumber.pipe(filter(x => !!x)).subscribe((opn: number) => {
+                this.opponentPlayerNumber = opn;
             }),
             this._boardStateService.readyToSubmit.subscribe(submittable => {
                 this.canSubmitMove = submittable;
@@ -67,37 +75,37 @@ export class AppComponent implements OnInit {
         );
     }
 
-    changeDifficulty(e: number): void {
+    public changeDifficulty(e: number): void {
         this._boardStateService.changeDifficulty(e);
     }
 
-    changeOnlineMethod(e: number): void {
+    public changeOnlineMethod(e: number): void {
         this._boardStateService.changeOnlineMethod(e);
     }
 
-    changeOpponent(e: number) {
+    public changeOpponent(e: number): void {
         this._boardStateService.changeOpponent(e);
     }
 
-    enterHelp(e: boolean) {
+    public enterHelp(e: boolean): void {
         this.helpMode = true;
     }
 
-    exitHelp() {
+    public exitHelp(): void {
         this.helpMode = false;
     }
 
-    getPlayerTurnMsg(): string {
-        if (this.activePlayer === 1) {
+    public getPlayerTurnMsg(): string {
+        if (this.activePlayer === this.playerNumber) {
             return 'Your Turn';
         } else if (this._boardStateService.getOpponent() === 2) {
-            return '(AI) Player 2\'s Turn';
+            return `(AI) Player ${this.opponentPlayerNumber}\'s Turn`;
         } else {
             return '(Human) Player 2\'s Turn';
         }
     }
 
-    goToMenu() {
+    public goToMenu(): void {
         if (this.modalService.hasOpenModals()) {
             this.modalService.dismissAll();
         }
@@ -113,19 +121,20 @@ export class AppComponent implements OnInit {
         this._subscriptionSetup();
     }
 
-    showNavigationPanel(): boolean {
+    public showNavigationPanel(): boolean {
         return !this.helpMode && !this.gameOverAck;
     }
 
-    showStartMenu(): boolean {
+    public showStartMenu(): boolean {
         return !this.helpMode && this.gameOverAck;
     }
 
-    startGame(): void {
+    public startGame(playerNumber: number): void {
+        this._boardStateService.changePlayerNumber(playerNumber);
         this.gameOverAck = false;
     }
 
-    submitMove(): void {
+    public submitMove(): void {
         this._boardStateService.makeMoves();
     }
 }

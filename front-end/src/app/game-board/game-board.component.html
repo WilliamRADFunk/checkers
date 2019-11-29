@@ -1,4 +1,6 @@
-<div class="col-6 mw-100 center shadow-lg border rounded">
+<div
+    class="col-6 mw-100 center shadow-lg border rounded"
+    [class.rotate]="playerNumber === 2">
 	<span>
 		<div *ngFor="let row of [0, 1, 2, 3, 4, 5, 6, 7];" class="row">
 			<div class="d-inline-block m-0 p-0">

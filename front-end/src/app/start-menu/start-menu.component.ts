@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, Input } from '@angular/core';
 
 @Component({
     selector: 'checkers-start-menu',
@@ -9,25 +9,31 @@ export class StartMenuComponent implements OnInit {
     activeDifficulty: number = 1;
     activeOnlineMethod: number = 1;
     activeOpponent: string = 'Local Human';
+    @Input() playerNumber: number;
+
     @Output() difficultySelected: EventEmitter<number> = new EventEmitter<number>();
     @Output() helpSelected: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() onlineMethodSelected: EventEmitter<number> = new EventEmitter<number>();
     @Output() opponentSelected: EventEmitter<number> = new EventEmitter<number>();
-    @Output() startSelected: EventEmitter<void> = new EventEmitter<void>();
+    @Output() startSelected: EventEmitter<number> = new EventEmitter<number>();
 
     constructor() { }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.difficultySelected.emit(1);
         this.opponentSelected.emit(1);
         this.onlineMethodSelected.emit(1);
     }
 
-    enterHelp() {
+    public enterHelp(): void {
         this.helpSelected.emit(true);
     }
 
-    getTooltipDiffMsg(choice: number): string {
+    public isColorOptionAvailable(): boolean {
+        return (this.activeOpponent === 'AI') || (this.activeOpponent === 'Online Human' && this.activeOnlineMethod === 1);
+    }
+
+    public getTooltipDiffMsg(choice: number): string {
         switch (choice) {
             case 1: {
                 return 'The AI will be clumsy and prone to the occasional mistake.';
@@ -47,7 +53,7 @@ export class StartMenuComponent implements OnInit {
         }
     }
 
-    getTooltipMsg(choice: string): string {
+    public getTooltipMsg(choice: string): string {
         switch (choice) {
             case 'Local Human': {
                 return 'Play with a friend, taking turns on the same device.';
@@ -64,7 +70,7 @@ export class StartMenuComponent implements OnInit {
         }
     }
 
-    getTooltipOMMsg(choice: number): string {
+    public getTooltipOMMsg(choice: number): string {
         switch (choice) {
             case 1: {
                 return 'Host a game online with someone you know (give the gameroom code to the other person).';
@@ -81,17 +87,31 @@ export class StartMenuComponent implements OnInit {
         }
     }
 
-    difficultyChange(choice: number): void {
+    public getTooltipStartMsg(choice: number): string {
+        switch (choice) {
+            case 1: {
+                return `Start game as player 1\n(silver team)`;
+            }
+            case 2: {
+                return `Start game as player 2\n(red team)`;
+            }
+            default: {
+                return 'Not a valid option';
+            }
+        }
+    }
+
+    public difficultyChange(choice: number): void {
         this.activeDifficulty = choice;
         this.difficultySelected.emit(choice);
     }
 
-    onlineMethodChange(choice: number): void {
+    public onlineMethodChange(choice: number): void {
         this.activeOnlineMethod = choice;
         this.onlineMethodSelected.emit(choice);
     }
 
-    opponentChange(choice: string): void {
+    public opponentChange(choice: string): void {
         this.activeOpponent = choice;
         switch (choice) {
             case 'Local Human': {
@@ -109,8 +129,7 @@ export class StartMenuComponent implements OnInit {
         }
     }
 
-    startGame(): void {
-        this.startSelected.emit();
+    public startGame(e: number): void {
+        this.startSelected.emit(e);
     }
-
 }

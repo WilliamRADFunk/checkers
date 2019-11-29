@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 import { Cell } from '../models/cell';
 
@@ -7,10 +7,8 @@ import { Cell } from '../models/cell';
     templateUrl: './man.component.html',
     styleUrls: ['./man.component.scss']
 })
-export class ManComponent implements OnInit {
+export class ManComponent {
     @Input() cell: Cell;
 
     constructor() { }
-
-    ngOnInit() { }
 }

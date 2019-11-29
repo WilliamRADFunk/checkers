@@ -12,18 +12,18 @@ export class HelpScreenComponent {
 
   constructor() { }
 
-  exitHelp() {
+  public exitHelp(): void {
       this.helpSelected.emit(false);
   }
 
-  nextPage() {
+  public nextPage(): void {
     if (this.activePage >= this.totalPages) {
       return;
     }
     this.activePage++;
   }
 
-  prevPage() {
+  public prevPage(): void {
     if (this.activePage <= 1) {
       return;
     }

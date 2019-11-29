@@ -21,12 +21,12 @@ export class CellComponent implements OnDestroy, OnInit {
 
     constructor(private readonly boardStateService: BoardStateService) { }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.subscriptions.forEach(s => s && s.unsubscribe());
         this.subscriptions = [];
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.subscriptions.push(
             this.boardStateService.currClickableCellIds.pipe(filter(x => !!x)).subscribe((clickables: number[]) => {
                 this.clickableCells = clickables;
@@ -44,20 +44,20 @@ export class CellComponent implements OnDestroy, OnInit {
         this.id = this.cell.id;
     }
 
-    @HostListener('click') onClick() {
+    @HostListener('click') onClick(): void {
         if (this.clickableCells.includes(this.id) || this.tracked) {
             this.boardStateService.cellClicked(this.cell);
         }
     }
 
-    @HostListener('mouseover') onHover() {
+    @HostListener('mouseover') onHover(): void {
         if (this.clickableCells.includes(this.id) || this.tracked) {
             this.highlighted = true;
         }
     }
 
     @HostListener('mouseleave')
-    @HostListener('mouseout') onLeave() {
+    @HostListener('mouseout') onLeave(): void {
         this.highlighted = false;
     }
 }

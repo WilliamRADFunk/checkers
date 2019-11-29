@@ -14,20 +14,24 @@ export class GameBoardComponent implements OnDestroy, OnInit {
     public board: Board;
     public gameOver: boolean;
     public isLoading: boolean = true;
-    public subscriptions: Subscription[] = [];
+    public playerNumber: number;
+    private _subscriptions: Subscription[] = [];
 
     constructor(private readonly _boardStateService: BoardStateService) { }
 
-    ngOnDestroy() {
-        this.subscriptions.forEach(s => s && s.unsubscribe());
-        this.subscriptions = [];
+    ngOnDestroy(): void {
+        this._subscriptions.forEach(s => s && s.unsubscribe());
+        this._subscriptions = [];
     }
 
-    ngOnInit() {
-        this.subscriptions.push(
+    ngOnInit(): void {
+        this._subscriptions.push(
             this._boardStateService.currBoardState.pipe(filter(x => !!x)).subscribe(bs => {
                 this.board = bs;
             }),
+            this._boardStateService.currPlayerNumber.pipe(filter(x => !!x)).subscribe((pn: number) => {
+                this.playerNumber = pn;
+            })
         );
     }
 }
