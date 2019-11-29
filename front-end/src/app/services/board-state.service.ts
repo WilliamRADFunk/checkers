@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 
+import * as uuidv1 from 'uuid/v1';
+
 import { Board } from '../models/board';
 import { Cell } from '../models/cell';
 import { aiDecider } from '../utils/ai-decider';
@@ -22,6 +24,7 @@ export class BoardStateService {
     private readonly _clickableCellIds: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
     // 0 == not over, 1 == player 1 wins, 2 == player 2 wins.
     private readonly _gameStatus: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    private _hostedRoomCode: BehaviorSubject<string> = new BehaviorSubject<string>('');
     private _memoizationTable: { [key: string]: number } = {};
     private _moveChainCells: Cell[] = [];
     private readonly _moveChainIds: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
@@ -31,17 +34,21 @@ export class BoardStateService {
     private readonly _opponentThinking: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     private readonly _playersNumber: BehaviorSubject<number> = new BehaviorSubject<number>(Math.random() > 0.5 ? 1 : 2);
     private readonly _readyToSubmit: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+    private readonly _opponentPlayerNumber: BehaviorSubject<number> = new BehaviorSubject<number>(this._playersNumber.value === 2 ? 1 : 2);
+
+
     readonly currActivePlayer: Observable<number> = this._activePlayer.asObservable();
     readonly currBoardState: Observable<Board> = this._boardState.asObservable();
     readonly currClickableCellIds: Observable<number[]> = this._clickableCellIds.asObservable();
     readonly currGameStatus: Observable<number> = this._gameStatus.asObservable();
+    readonly currHostedRoomCode: Observable<string> = this._hostedRoomCode.asObservable();
     readonly currMoveChainIds: Observable<number[]> = this._moveChainIds.asObservable();
+    readonly currOpponentPlayerNumber: Observable<number> = this._opponentPlayerNumber.asObservable();
     readonly currOpponentThinking: Observable<boolean> = this._opponentThinking.asObservable();
     readonly currPlayerNumber: Observable<number> = this._playersNumber.asObservable();
     readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
     
-    private readonly _opponentPlayerNumber: BehaviorSubject<number> = new BehaviorSubject<number>(this._playersNumber.value === 2 ? 1 : 2);
-    readonly currOpponentPlayerNumber: Observable<number> = this._opponentPlayerNumber.asObservable();
 
     constructor() {
         this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
@@ -123,10 +130,21 @@ export class BoardStateService {
     }
 
     public changeOnlineMethod(method: number): void {
+        // If other than hosting, flush provided gameroom code.
+        if (method !== 1 && this._hostedRoomCode.value) {
+            this._hostedRoomCode.next('');
+        }
         this._onlineMethod = method;
     }
 
     public changeOpponent(opponent: number): void {
+        this.changeOnlineMethod(1);
+        // If hosting, generate gameroom code. Otherwise, flush code to make room for user entered version.
+        if (opponent === 3) {
+            this._hostedRoomCode.next(uuidv1.default());
+        } else {
+            this._hostedRoomCode.next('');
+        }
         this._opponent = opponent;
     }
 

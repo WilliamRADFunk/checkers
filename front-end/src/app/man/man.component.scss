@@ -1,39 +1,31 @@
 .rotate {
     transform: rotate(180deg);
 }
-.black-team-color {
-  background-image: url("../../assets/images/frogo-red.png");
-  background-repeat: no-repeat;
-  background-position: left top;
-  background-size: 4vw;
-  height: 4vw;
+.red-team-color {
+    background-image: url("../../assets/images/frogo-red.png");
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-size: 4vw;
+    height: 4vw;
+    min-height: 4vw;
+    min-width: 4vw;
+    width: 4vw;
+
+    &.king {
+        background-image: url("../../assets/images/frogo-red-king.png");
+    }
+}
+.silver-team-color {
+    background-image: url("../../assets/images/frogo-silver.png");
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-size: 4vw;
+    height: 4vw;
 	min-height: 4vw;
 	min-width: 4vw;
-  width: 4vw;
+    width: 4vw;
 
-  .fa,
-  .fa-rebel {
-      color: #BABABA;
-  }
-}
-.white-team-color {
-  background-image: url("../../assets/images/frogo-silver.png");
-  background-repeat: no-repeat;
-  background-position: left top;
-  background-size: 4vw;
-  height: 4vw;
-	min-height: 4vw;
-	min-width: 4vw;
-  width: 4vw;
-
-  .fa,
-  .fa-rebel {
-      color: #DA1C1C;
-  }
-}
-.crown {
-
-  .fa {
-    font-size: 0.5em;
-  }
+    &.king {
+        background-image: url("../../assets/images/frogo-silver-king.png");
+    }
 }

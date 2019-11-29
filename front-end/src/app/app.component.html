@@ -43,7 +43,8 @@
     <div class="col-12 order-1 order-md-2 w-100" [class.col-md-8]="!helpMode && !showStartMenu()">
 		<checkers-start-menu
 			*ngIf="showStartMenu()"
-			(difficultySelected)="changeDifficulty($event)"
+            (difficultySelected)="changeDifficulty($event)"
+            [gameroomCode]="gameroomCode"
 			(helpSelected)="enterHelp($event)"
 			(onlineMethodSelected)="changeOnlineMethod($event)"
             (opponentSelected)="changeOpponent($event)"

@@ -1,16 +1,8 @@
 <ng-container *ngIf="cell.player === 1; else opponent">
-    <div class="white-team-color">
-        <div *ngIf="cell.value === 2" class="crown">
-            <span *ngIf="cell.value === 2" class="fa fa-rebel"></span>
-        </div>
-    </div>
+    <div class="silver-team-color" [class.king]="cell.value === 2"></div>
 </ng-container>
 <ng-template #opponent>
     <ng-container *ngIf="cell.player === 2">
-        <div class="rotate black-team-color">
-            <div *ngIf="cell.value === 2" class="crown">
-                <span *ngIf="cell.value === 2" class="fa fa-rebel"></span>
-            </div>
-        </div>
+        <div class="rotate red-team-color" [class.king]="cell.value === 2"></div>
     </ng-container>
 </ng-template>
