@@ -21,9 +21,10 @@ export class StartMenuComponent implements OnInit {
     constructor() { }
 
     ngOnInit(): void {
-        this.difficultySelected.emit(1);
-        this.opponentSelected.emit(1);
-        this.onlineMethodSelected.emit(1);
+        setTimeout(() => {
+            this.difficultySelected.emit(1);
+            this.opponentSelected.emit(1);
+        }, 10);
     }
 
     public enterHelp(): void {

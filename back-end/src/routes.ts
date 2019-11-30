@@ -10,20 +10,13 @@ const  allowedDomains = [
 export class Routes {
     private _server: http.Server;
     private _io: socketIO;
-    private _socket: socketIO.socket;
     private rooms: { [key: string]: { player1: number; player2: number } } = {};
 
 	constructor(app: Express) {
         this._server = new http.Server(app);
         this._io = socketIO(this._server);
-        this._socket = this._io.socket;
-        console.log('socket', this._socket);
 
         this._io.on('connection', socket => {
-            console.log('socket', socket);
-            Object.keys(socket).forEach(key => {
-                console.log('socket - key', key);
-            });
             socket.on('disconnect', () => {
                 // remove disconnected player
                 Object.keys(this.rooms).forEach(roomCode => {
@@ -41,7 +34,7 @@ export class Routes {
             socket.on('new player', data => {
                 // If the room code isn't registered yet, set it up.
                 if (data.roomCode && !this.rooms[data.roomCode]) {
-                    console.log('new player called', data.roomCode);
+                    console.log('new player called', data.roomCode, data.player);
                     this.rooms[data.roomCode] = {
                         player1: null,
                         player2: null
@@ -63,13 +56,13 @@ export class Routes {
                     console.error(`Player (${socket.id}) trying to register for room (${data.roomCode}), but all player slots are full.`);
                 }
             });
-            socket.on('movement', data => {
-                var player = this.rooms[socket.id] || {};
-            });
+            // socket.on('movement', data => {
+            //     var player = this.rooms[socket.id] || {};
+            // });
         });
 
 		app.get("/", this.default);
-		app.get("/register-gameroom/:code", this.registerRoom.bind(this));
+		app.get("/register-gameroom/:code/:playerNumber", this.registerRoom.bind(this));
 	}
 
 	private default(req, res) {
@@ -80,14 +73,32 @@ export class Routes {
 
 	private registerRoom(req, res): void {
         const code: string = req.params && req.params.code;
-        console.log('registerRoom', code);
-		if (code) {
-            this._socket.emit('new player', { roomCode: code });
+        const playerNumber: number = req.params && req.params.playerNumber && Number(req.params.playerNumber);
+        console.log('registerRoom', code, playerNumber);
+		if (code && (playerNumber === 1 || playerNumber === 2)) {
+            const data = {
+                player: playerNumber,
+                roomCode: code
+            };
+            this._io.emit('new player', data);
 			res.status(200).send({ message: `Successful code: ${code}`});
 		} else {
 			res.status(404).send({ message: `Invalid code: ${code}`});
 		}
 		res.end();
 		return;
+    }
+
+	private makeMove(req, res): void {
+        // const code: string = req.params && req.params.code;
+        // console.log('registerRoom', code);
+		// if (code) {
+        //     this._io.emit('new player', { roomCode: code });
+		// 	res.status(200).send({ message: `Successful code: ${code}`});
+		// } else {
+		// 	res.status(404).send({ message: `Invalid code: ${code}`});
+		// }
+		// res.end();
+		// return;
 	}
 }

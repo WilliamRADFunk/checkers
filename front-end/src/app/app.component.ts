@@ -122,7 +122,7 @@ export class AppComponent implements OnInit {
         } else if (this._boardStateService.getOpponent() === 2) {
             return `(AI) Player ${this.opponentPlayerNumber}\'s Turn`;
         } else {
-            return '(Human) Player 2\'s Turn';
+            return `(Human) Player ${this.activePlayer}\'s Turn`;
         }
     }
 
@@ -152,9 +152,6 @@ export class AppComponent implements OnInit {
 
     public startGame(playerNumber: number): void {
         this._boardStateService.changePlayerNumber(playerNumber);
-        if (this._opponent === 3 && this._onlineMethod === 1) {
-            this._boardStateService.registerHostRoom();
-        }
         this.gameOverAck = false;
     }
 

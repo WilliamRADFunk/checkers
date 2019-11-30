@@ -72,9 +72,30 @@ export class BoardStateService {
 
         if (!this._gameStatus.value && this._opponent === 2 && this._activePlayer.value === this._opponentPlayerNumber.value) {
             this._takeAITurn();
+        } else if (!this._gameStatus.value && this._opponent === 3 && this._activePlayer.value === this._opponentPlayerNumber.value) {
+            this._opponentThinking.next(true);
         } else {
             this._opponentThinking.next(false);
         }
+    }
+
+    private _registerHostRoom(): void {
+        if (this._activePlayer.value === this._playersNumber.value) {
+            this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
+        } else {
+            this._clickableCellIds.next([]);
+            this._readyToSubmit.next(false);
+            this._moveChainIds.next([]);
+            this._moveChainCells = [];
+        }
+        this.http.get<any>(`${DATA_URL}register-gameroom/${this._hostedRoomCode.value}/${this._playersNumber.value}`)
+            .toPromise()
+            .then(data => {
+                console.log(data && data.message);
+            })
+            .catch(err => {
+                console.error(err && err.message);
+            });
     }
 
     private _takeAITurn(): void {
@@ -159,6 +180,8 @@ export class BoardStateService {
         this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
         if (this._opponent === 2 && this._activePlayer.value === this._opponentPlayerNumber.value) {
             this._takeAITurn();
+        } else if (this._opponent === 3 && this._onlineMethod === 1) {
+            this._registerHostRoom();
         }
     }
 
@@ -178,17 +201,6 @@ export class BoardStateService {
         this._readyToSubmit.next(false);
         makeMoves(this._boardState.value, moveChainIds || this._moveChainIds.value, moveChainCells || this._moveChainCells);
         this._changeTurn();
-    }
-
-    public registerHostRoom(): void {
-        this.http.get<any>(`${DATA_URL}register-gameroom/${this._hostedRoomCode.value}`)
-            .toPromise()
-            .then(data => {
-                console.log(data && data.message);
-            })
-            .catch(err => {
-                console.error(err && err.message);
-            });
     }
 
     public reset(playerNumber?: number, opponentPlayerNumber?: number): void {
