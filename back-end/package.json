@@ -8,7 +8,7 @@
         "clean:docs": "rimraf docs/",
         "lint": "tslint -c tslint.json -p tsconfig.json --fix",
         "readme": "run-s clean:docs typedoc",
-        "start": "ts-node server.ts",
+        "start": "ts-node index.ts",
         "test": "echo \"Error: no test specified\" && exit 1",
         "tsc": "tsc",
         "typedoc": "typedoc --theme markdown --mode file --target ES6 --readme none --out docs src/"

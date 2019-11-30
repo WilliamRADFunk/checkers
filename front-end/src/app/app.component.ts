@@ -11,6 +11,7 @@ import { BoardStateService } from './services/board-state.service';
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+    private _onlineMethod: number;
     private _opponent: number;
     private _subscriptions: Subscription[] = [];
 
@@ -96,6 +97,7 @@ export class AppComponent implements OnInit {
     }
 
     public changeOnlineMethod(e: number): void {
+        this._onlineMethod = e;
         this._boardStateService.changeOnlineMethod(e);
     }
 
@@ -150,6 +152,9 @@ export class AppComponent implements OnInit {
 
     public startGame(playerNumber: number): void {
         this._boardStateService.changePlayerNumber(playerNumber);
+        if (this._opponent === 3 && this._onlineMethod === 1) {
+            this._boardStateService.registerHostRoom();
+        }
         this.gameOverAck = false;
     }
 

@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject, timer } from 'rxjs';
+import { switchMap, take } from 'rxjs/operators';
 
 import * as uuidv1 from 'uuid/v1';
 
@@ -13,6 +15,10 @@ import { crownKings } from '../utils/crown-kings';
 import { findClickableCells } from '../utils/find-clickable-cells';
 import { makeMoves } from '../utils/make-moves';
 import { resetBoard } from '../utils/reset-board';
+
+const INTERFACE_URL = 'http://www.williamrobertfunk.com';
+// const DATA_URL = 'http://000.00.000.0:5000/';
+const DATA_URL = 'http://localhost:5000/';
 
 @Injectable({
     providedIn: 'root'
@@ -49,7 +55,7 @@ export class BoardStateService {
     readonly currPlayerNumber: Observable<number> = this._playersNumber.asObservable();
     readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
 
-    constructor() {
+    constructor(private readonly http: HttpClient) {
         this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
     }
 
@@ -172,6 +178,17 @@ export class BoardStateService {
         this._readyToSubmit.next(false);
         makeMoves(this._boardState.value, moveChainIds || this._moveChainIds.value, moveChainCells || this._moveChainCells);
         this._changeTurn();
+    }
+
+    public registerHostRoom(): void {
+        this.http.get<any>(`${DATA_URL}register-gameroom/${this._hostedRoomCode.value}`)
+            .toPromise()
+            .then(data => {
+                console.log(data && data.message);
+            })
+            .catch(err => {
+                console.error(err && err.message);
+            });
     }
 
     public reset(playerNumber?: number, opponentPlayerNumber?: number): void {
