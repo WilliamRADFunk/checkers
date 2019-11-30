@@ -4,6 +4,7 @@ import { Observable, BehaviorSubject, timer } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
 
 import * as uuidv1 from 'uuid/v1';
+// import { Socket } from 'ngx-socket-io';
 
 import { Board } from '../models/board';
 import { Cell } from '../models/cell';
@@ -55,7 +56,10 @@ export class BoardStateService {
     readonly currPlayerNumber: Observable<number> = this._playersNumber.asObservable();
     readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
 
-    constructor(private readonly http: HttpClient) {
+    constructor(
+        private readonly http: HttpClient,
+        // private socket: Socket
+        ) {
         this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
     }
 
@@ -79,19 +83,21 @@ export class BoardStateService {
         }
     }
 
-    private _registerHostRoom(): void {
-        if (this._activePlayer.value === this._playersNumber.value) {
-            this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
-        } else {
-            this._clickableCellIds.next([]);
-            this._readyToSubmit.next(false);
-            this._moveChainIds.next([]);
-            this._moveChainCells = [];
-        }
-        this.http.get<any>(`${DATA_URL}register-gameroom/${this._hostedRoomCode.value}/${this._playersNumber.value}`)
+    private _registerHostRoom(playerNumber: number): Promise<void> {
+        // this.socket.emit('new player', { roomCode: '123', player: 2 });
+        return this.http.get<any>(`${DATA_URL}register-gameroom/${this._hostedRoomCode.value}/${playerNumber}`)
             .toPromise()
             .then(data => {
                 console.log(data && data.message);
+                
+                if (this._activePlayer.value === playerNumber) {
+                    this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
+                } else {
+                    this._clickableCellIds.next([]);
+                    this._readyToSubmit.next(false);
+                    this._moveChainIds.next([]);
+                    this._moveChainCells = [];
+                }
             })
             .catch(err => {
                 console.error(err && err.message);
@@ -159,12 +165,13 @@ export class BoardStateService {
         // If other than hosting, flush provided gameroom code.
         if (method !== 1 && this._hostedRoomCode.value) {
             this._hostedRoomCode.next('');
+        } else if (method === 1 && !this._hostedRoomCode.value) {
+            this._hostedRoomCode.next(uuidv1.default());
         }
         this._onlineMethod = method;
     }
 
     public changeOpponent(opponent: number): void {
-        this.changeOnlineMethod(1);
         // If hosting, generate gameroom code. Otherwise, flush code to make room for user entered version.
         if (opponent === 3) {
             this._hostedRoomCode.next(uuidv1.default());
@@ -174,15 +181,19 @@ export class BoardStateService {
         this._opponent = opponent;
     }
 
-    public changePlayerNumber(playerNumber: number): void {
+    public changePlayerNumber(playerNumber: number): Promise<void> {
         this._playersNumber.next(playerNumber);
         this._opponentPlayerNumber.next(playerNumber === 1 ? 2 : 1);
-        this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
         if (this._opponent === 2 && this._activePlayer.value === this._opponentPlayerNumber.value) {
+            this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
             this._takeAITurn();
         } else if (this._opponent === 3 && this._onlineMethod === 1) {
-            this._registerHostRoom();
+            return this._registerHostRoom(playerNumber);
         }
+        this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
+        return new Promise((resolve, reject) => {
+            resolve();
+        });
     }
 
     public getActivePlayer(): number {
@@ -195,6 +206,29 @@ export class BoardStateService {
 
     public getOpponent(): number {
         return this._opponent;
+    }
+
+    public joinGameroom(code: string): Promise<void> {
+        this._hostedRoomCode.next('');
+        console.log('joinGameroom', `${DATA_URL}join-gameroom/${code}`);
+        return this.http.get<any>(`${DATA_URL}join-gameroom/${code}`)
+            .toPromise()
+            .then(data => {
+                console.log(data && data.player);
+                this._playersNumber.next(data.player);
+
+                if (this._activePlayer.value === data.player) {
+                    this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
+                } else {
+                    this._clickableCellIds.next([]);
+                    this._readyToSubmit.next(false);
+                    this._moveChainIds.next([]);
+                    this._moveChainCells = [];
+                }
+            })
+            .catch(err => {
+                console.error(err && err.message);
+            });
     }
 
     public makeMoves(moveChainIds?: number[], moveChainCells?: Cell[]): void {

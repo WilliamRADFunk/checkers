@@ -9,7 +9,7 @@ export class ExpressWrapper {
 	private port: number;
 	private routes: Routes;
 
-	constructor(isPrivate?: boolean) {
+	constructor() {
 		this.port = 5000;
 		this.app.use(cors());
 		this.app.use(bodyParser.json());

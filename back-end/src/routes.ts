@@ -1,6 +1,7 @@
 import { Express } from 'express';
 import * as http from 'http';
 import * as socketIO from 'socket.io';
+import * as io from 'socket.io-client'
 
 const  allowedDomains = [
 	'http://localhost:4200',
@@ -9,14 +10,20 @@ const  allowedDomains = [
 
 export class Routes {
     private _server: http.Server;
-    private _io: socketIO;
-    private rooms: { [key: string]: { player1: number; player2: number } } = {};
+    private _client;
+    private _io: socketIO.Server;
+    private rooms: { [key: string]: { player1: string; player2: string } } = {};
 
 	constructor(app: Express) {
+        app.get("/", this._default);
+		app.get("/join-gameroom/:code", this._joinRoom.bind(this));
+        app.get("/register-gameroom/:code/:playerNumber", this._registerRoom.bind(this));
+
         this._server = new http.Server(app);
-        this._io = socketIO(this._server);
+        this._io = socketIO.listen(this._server);
 
         this._io.on('connection', socket => {
+            console.log('socket', socket);
             socket.on('disconnect', () => {
                 // remove disconnected player
                 Object.keys(this.rooms).forEach(roomCode => {
@@ -32,6 +39,7 @@ export class Routes {
                 });
             });
             socket.on('new player', data => {
+                console.log('new player called', data.roomCode, data.player);
                 // If the room code isn't registered yet, set it up.
                 if (data.roomCode && !this.rooms[data.roomCode]) {
                     console.log('new player called', data.roomCode, data.player);
@@ -60,18 +68,37 @@ export class Routes {
             //     var player = this.rooms[socket.id] || {};
             // });
         });
-
-		app.get("/", this.default);
-		app.get("/register-gameroom/:code/:playerNumber", this.registerRoom.bind(this));
+        
+        this._client = io.connect('http://127.0.0.1:5000');
 	}
 
-	private default(req, res) {
-		res.status(200).send({ message: "You\'ve reached the checkers backend"});
+	private _default(req, res) {
+		res.status(200).send("You\'ve reached the checkers backend");
 		res.end();
 		return;
 	};
 
-	private registerRoom(req, res): void {
+	private _joinRoom(req, res): void {
+        const code: string = req.params && req.params.code;
+		if (code) {
+            let player;
+            const data = {
+                roomCode: code
+            };
+            console.log('joinRoom', code, JSON.stringify(Object.keys(this.rooms)));
+            if (this.rooms[code]) {
+                player = this.rooms[code].player1 ? 2 : 1;
+            }
+            this._client.emit('new player', data);
+			res.status(200).send({ player: player });
+		} else {
+			res.status(404).send({ message: `Invalid code: ${code}`});
+		}
+		res.end();
+		return;
+    }
+
+	private _registerRoom(req, res): void {
         const code: string = req.params && req.params.code;
         const playerNumber: number = req.params && req.params.playerNumber && Number(req.params.playerNumber);
         console.log('registerRoom', code, playerNumber);
@@ -80,25 +107,16 @@ export class Routes {
                 player: playerNumber,
                 roomCode: code
             };
-            this._io.emit('new player', data);
-			res.status(200).send({ message: `Successful code: ${code}`});
+            this._client.emit('new player', data);
+            res.status(200).send({ message: `Successful code: ${code}`});
 		} else {
-			res.status(404).send({ message: `Invalid code: ${code}`});
+            res.status(404).send({ message: `Invalid code: ${code}`});
 		}
-		res.end();
-		return;
+        res.end();
+        return;
     }
 
-	private makeMove(req, res): void {
-        // const code: string = req.params && req.params.code;
-        // console.log('registerRoom', code);
-		// if (code) {
-        //     this._io.emit('new player', { roomCode: code });
-		// 	res.status(200).send({ message: `Successful code: ${code}`});
-		// } else {
-		// 	res.status(404).send({ message: `Invalid code: ${code}`});
-		// }
-		// res.end();
-		// return;
+	private _makeMove(req, res): void {
+
 	}
 }

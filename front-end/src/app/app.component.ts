@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { Subscription } from 'rxjs';
 import { filter, distinctUntilChanged } from 'rxjs/operators';
@@ -10,9 +10,10 @@ import { BoardStateService } from './services/board-state.service';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
-    private _onlineMethod: number;
-    private _opponent: number;
+export class AppComponent implements OnDestroy, OnInit {
+    private gameroomCodeByUser: string = '';
+    private _onlineMethod: number = 1;
+    private _opponent: number = 1;
     private _subscriptions: Subscription[] = [];
 
     public activePlayer: number;
@@ -29,6 +30,14 @@ export class AppComponent implements OnInit {
     constructor(
         private readonly _boardStateService: BoardStateService,
         private modalService: NgbModal) { }
+    
+    ngOnDestroy() {
+        if (this.modalService.hasOpenModals()) {
+            this.modalService.dismissAll();
+        }
+        this._subscriptions.forEach(sub => sub && sub.unsubscribe());
+        this._subscriptions.length = 0;
+    }
 
     ngOnInit() {
         this._subscriptionSetup();
@@ -114,6 +123,10 @@ export class AppComponent implements OnInit {
         this.helpMode = false;
     }
 
+    public gameroomCodeEntered(code: string): void {
+        this.gameroomCodeByUser = code;
+    }
+
     public getPlayerTurnMsg(): string {
         if (this._opponent === 1) {
             return `(Human) Player ${this.activePlayer}\'s Turn`;
@@ -151,8 +164,21 @@ export class AppComponent implements OnInit {
     }
 
     public startGame(playerNumber: number): void {
-        this._boardStateService.changePlayerNumber(playerNumber);
-        this.gameOverAck = false;
+        console.log('startGame', this._opponent, this._onlineMethod, this.gameroomCodeByUser);
+        if (this._opponent === 3 && this._onlineMethod === 2) {
+            this._boardStateService.joinGameroom(this.gameroomCodeByUser)
+                .then(() => {
+                    this.gameOverAck = false;
+                });
+        } else if (this._opponent === 3 && this._onlineMethod === 1) {
+            this._boardStateService.changePlayerNumber(playerNumber)
+                .then(() => {
+                    console.log('startGame', this.playerNumber);
+                    this.gameOverAck = false;
+                });
+        } else {
+            this.gameOverAck = false;
+        }
     }
 
     public submitMove(): void {

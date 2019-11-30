@@ -45,6 +45,7 @@
 			*ngIf="showStartMenu()"
             (difficultySelected)="changeDifficulty($event)"
             [gameroomCode]="gameroomCode"
+            (gameroomCodeEntered)="gameroomCodeEntered($event)"
 			(helpSelected)="enterHelp($event)"
 			(onlineMethodSelected)="changeOnlineMethod($event)"
             (opponentSelected)="changeOpponent($event)"

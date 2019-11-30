@@ -110,10 +110,17 @@
                 </div>
             </div>
         </div>
-        <div *ngIf="gameroomCode" class="d-flex justify-content-center">
+        <div *ngIf="gameroomCode && activeOnlineMethod === 1" class="d-flex justify-content-center">
             <div class="col text-center text-white mt-3 mb-1">
                 <span class="border rounded p-2">
                     {{ gameroomCode }}
+                </span>
+            </div>
+        </div>
+        <div *ngIf="activeOnlineMethod === 2" class="d-flex justify-content-center">
+            <div class="col text-center text-white mt-3 mb-1">
+                <span class="border rounded p-2">
+                    <input type="text" [formControl]="gameroomCodeProvided"/>
                 </span>
             </div>
         </div>

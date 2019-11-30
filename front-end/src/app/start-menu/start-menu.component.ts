@@ -1,30 +1,46 @@
-import { Component, EventEmitter, Output, OnInit, Input } from '@angular/core';
+import { Component, EventEmitter, Output, OnDestroy, OnInit, Input } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'checkers-start-menu',
     templateUrl: './start-menu.component.html',
     styleUrls: ['./start-menu.component.scss']
 })
-export class StartMenuComponent implements OnInit {
+export class StartMenuComponent implements OnDestroy, OnInit {
+    private _subscriptions: Subscription[] = [];
+
     activeDifficulty: number = 1;
     activeOnlineMethod: number = 1;
     activeOpponent: string = 'Local Human';
+    gameroomCodeProvided: FormControl = new FormControl('');
     @Input() gameroomCode: string;
     @Input() playerNumber: number;
 
     @Output() difficultySelected: EventEmitter<number> = new EventEmitter<number>();
+    @Output() gameroomCodeEntered: EventEmitter<string> = new EventEmitter<string>();
     @Output() helpSelected: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() onlineMethodSelected: EventEmitter<number> = new EventEmitter<number>();
     @Output() opponentSelected: EventEmitter<number> = new EventEmitter<number>();
     @Output() startSelected: EventEmitter<number> = new EventEmitter<number>();
 
     constructor() { }
+    
+    ngOnDestroy() {
+        this._subscriptions.forEach(sub => sub && sub.unsubscribe());
+        this._subscriptions.length = 0;
+    }
 
     ngOnInit(): void {
         setTimeout(() => {
             this.difficultySelected.emit(1);
             this.opponentSelected.emit(1);
         }, 10);
+        this._subscriptions.push(
+            this.gameroomCodeProvided.valueChanges.subscribe(value => {
+                this.gameroomCodeEntered.emit(value);
+            })
+        );
     }
 
     public enterHelp(): void {
@@ -126,6 +142,7 @@ export class StartMenuComponent implements OnInit {
             }
             case 'Online Human': {
                 this.opponentSelected.emit(3);
+                this.onlineMethodChange(1);
                 break;
             }
         }
