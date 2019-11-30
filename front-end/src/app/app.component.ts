@@ -23,6 +23,7 @@ export class AppComponent implements OnDestroy, OnInit {
     public gameOverAck: boolean = true;
     public gameroomCode: string;
     public helpMode: boolean = false;
+    public isJoiningRoom: boolean = false;
     public opponentIsThinking: boolean = false;
     public opponentPlayerNumber: number;
     public playerNumber: number;
@@ -53,6 +54,10 @@ export class AppComponent implements OnDestroy, OnInit {
                 .pipe(filter(x => !!x))
                 .subscribe((ap: number) => {
                     this.activePlayer = ap;
+                }),
+            this._boardStateService.currJoiningRoom
+                .subscribe(isJoiningRoom => {
+                    this.isJoiningRoom = isJoiningRoom;
                 }),
             this._boardStateService.currPlayerNumber
                 .pipe(filter(x => !!x))
@@ -166,19 +171,13 @@ export class AppComponent implements OnDestroy, OnInit {
     public startGame(playerNumber: number): void {
         console.log('startGame', this._opponent, this._onlineMethod, this.gameroomCodeByUser);
         if (this._opponent === 3 && this._onlineMethod === 2) {
-            this._boardStateService.joinGameroom(this.gameroomCodeByUser)
-                .then(() => {
-                    this.gameOverAck = false;
-                });
+            this._boardStateService.joiningRoom();
+            this._boardStateService.joinGameroom(this.gameroomCodeByUser);
         } else if (this._opponent === 3 && this._onlineMethod === 1) {
-            this._boardStateService.changePlayerNumber(playerNumber)
-                .then(() => {
-                    console.log('startGame', this.playerNumber);
-                    this.gameOverAck = false;
-                });
-        } else {
-            this.gameOverAck = false;
+            this._boardStateService.joiningRoom();
+            this._boardStateService.changePlayerNumber(playerNumber);
         }
+        this.gameOverAck = false;
     }
 
     public submitMove(): void {

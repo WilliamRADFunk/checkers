@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, timer } from 'rxjs';
-import { switchMap, take } from 'rxjs/operators';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 import * as uuidv1 from 'uuid/v1';
-// import { Socket } from 'ngx-socket-io';
+import { Socket } from 'ngx-socket-io';
 
 import { Board } from '../models/board';
 import { Cell } from '../models/cell';
@@ -32,6 +30,8 @@ export class BoardStateService {
     // 0 == not over, 1 == player 1 wins, 2 == player 2 wins.
     private readonly _gameStatus: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     private _hostedRoomCode: BehaviorSubject<string> = new BehaviorSubject<string>('');
+    private readonly _id: string;
+    private _joiningRoom: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     private _memoizationTable: { [key: string]: number } = {};
     private _moveChainCells: Cell[] = [];
     private readonly _moveChainIds: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
@@ -50,17 +50,34 @@ export class BoardStateService {
     readonly currClickableCellIds: Observable<number[]> = this._clickableCellIds.asObservable();
     readonly currGameStatus: Observable<number> = this._gameStatus.asObservable();
     readonly currHostedRoomCode: Observable<string> = this._hostedRoomCode.asObservable();
+    readonly currJoiningRoom: Observable<boolean> = this._joiningRoom.asObservable();
     readonly currMoveChainIds: Observable<number[]> = this._moveChainIds.asObservable();
     readonly currOpponentPlayerNumber: Observable<number> = this._opponentPlayerNumber.asObservable();
     readonly currOpponentThinking: Observable<boolean> = this._opponentThinking.asObservable();
     readonly currPlayerNumber: Observable<number> = this._playersNumber.asObservable();
     readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
 
-    constructor(
-        private readonly http: HttpClient,
-        // private socket: Socket
-        ) {
+    constructor(private socket: Socket) {
+        this._id = this.socket.ioSocket.id;
         this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
+        this.socket.on('joined room', data => {
+            console.log('joined room', data);
+            if (data && data.playerNumber && data.id === this._id) {
+                this._playersNumber.next(data.playerNumber);
+                if (this._activePlayer.value === data.playerNumber) {
+                    this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
+                } else {
+                    this._clickableCellIds.next([]);
+                    this._readyToSubmit.next(false);
+                    this._moveChainIds.next([]);
+                    this._moveChainCells = [];
+                }
+            }
+
+            if (data && data.roomFull) {
+                this._joiningRoom.next(false);
+            }
+        });
     }
 
     private _changeTurn(): void {
@@ -83,25 +100,8 @@ export class BoardStateService {
         }
     }
 
-    private _registerHostRoom(playerNumber: number): Promise<void> {
-        // this.socket.emit('new player', { roomCode: '123', player: 2 });
-        return this.http.get<any>(`${DATA_URL}register-gameroom/${this._hostedRoomCode.value}/${playerNumber}`)
-            .toPromise()
-            .then(data => {
-                console.log(data && data.message);
-                
-                if (this._activePlayer.value === playerNumber) {
-                    this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
-                } else {
-                    this._clickableCellIds.next([]);
-                    this._readyToSubmit.next(false);
-                    this._moveChainIds.next([]);
-                    this._moveChainCells = [];
-                }
-            })
-            .catch(err => {
-                console.error(err && err.message);
-            });
+    private _registerHostRoom(playerNumber: number): void {
+        this.socket.emit('new player', { roomCode: this._hostedRoomCode.value, player: playerNumber, id: this.socket.ioSocket.id });
     }
 
     private _takeAITurn(): void {
@@ -181,19 +181,16 @@ export class BoardStateService {
         this._opponent = opponent;
     }
 
-    public changePlayerNumber(playerNumber: number): Promise<void> {
+    public changePlayerNumber(playerNumber: number): void {
         this._playersNumber.next(playerNumber);
         this._opponentPlayerNumber.next(playerNumber === 1 ? 2 : 1);
         if (this._opponent === 2 && this._activePlayer.value === this._opponentPlayerNumber.value) {
             this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
             this._takeAITurn();
         } else if (this._opponent === 3 && this._onlineMethod === 1) {
-            return this._registerHostRoom(playerNumber);
+            this._registerHostRoom(playerNumber);
         }
         this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
-        return new Promise((resolve, reject) => {
-            resolve();
-        });
     }
 
     public getActivePlayer(): number {
@@ -208,27 +205,13 @@ export class BoardStateService {
         return this._opponent;
     }
 
-    public joinGameroom(code: string): Promise<void> {
-        this._hostedRoomCode.next('');
-        console.log('joinGameroom', `${DATA_URL}join-gameroom/${code}`);
-        return this.http.get<any>(`${DATA_URL}join-gameroom/${code}`)
-            .toPromise()
-            .then(data => {
-                console.log(data && data.player);
-                this._playersNumber.next(data.player);
+    public joinGameroom(code: string): void {
+        this._hostedRoomCode.next('');        
+        this.socket.emit('new player', { roomCode: code, id: this.socket.ioSocket.id });
+    }
 
-                if (this._activePlayer.value === data.player) {
-                    this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
-                } else {
-                    this._clickableCellIds.next([]);
-                    this._readyToSubmit.next(false);
-                    this._moveChainIds.next([]);
-                    this._moveChainCells = [];
-                }
-            })
-            .catch(err => {
-                console.error(err && err.message);
-            });
+    public joiningRoom(): void {
+        this._joiningRoom.next(true);
     }
 
     public makeMoves(moveChainIds?: number[], moveChainCells?: Cell[]): void {
