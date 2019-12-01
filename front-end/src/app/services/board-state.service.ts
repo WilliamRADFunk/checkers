@@ -67,8 +67,33 @@ export class BoardStateService {
             if (data && data.roomFull) {
                 setTimeout(() => {
                     this._joiningRoom.next(false);
+                    console.log('This person\'s turn', data.playerNumber, this._playersNumber.value, this._activePlayer.value);
                     if (this._activePlayer.value === this._playersNumber.value) {
                         console.log('This person\'s turn');
+                        this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
+                    } else {
+                        this._clickableCellIds.next([]);
+                        this._readyToSubmit.next(false);
+                        this._moveChainIds.next([]);
+                        this._moveChainCells = [];
+                    }
+                }, 100);
+            }
+        });
+        this.socket.on('move made', data => {
+            if (data && data.roomCode === this._hostedRoomCode.value && data.id !== this._id) {
+                this._boardState.next(data.board);
+                this._activePlayer.next(data.board.activePlayer);
+                setTimeout(() => {
+                    this._gameStatus.next(data.board.gameStatus);
+                    // If game is over don't bother calculating moves.
+                    if (data.board.gameStatus) {
+                        return;
+                    }
+                    // Calculate moves on new board state based off of who active player is this turn.
+                    if (this._activePlayer.value === this._playersNumber.value) {
+                        console.log('This person\'s turn');
+                        this._opponentThinking.next(false);
                         this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
                     } else {
                         this._clickableCellIds.next([]);
@@ -212,7 +237,7 @@ export class BoardStateService {
     }
 
     public joinGameroom(code: string): void {
-        this._hostedRoomCode.next('');        
+        this._hostedRoomCode.next(code);        
         this.socket.emit('new player', { roomCode: code, id: this.socket.ioSocket.id });
     }
 
@@ -224,6 +249,12 @@ export class BoardStateService {
         this._readyToSubmit.next(false);
         makeMoves(this._boardState.value, moveChainIds || this._moveChainIds.value, moveChainCells || this._moveChainCells);
         this._changeTurn();
+        if (this._opponent === 3) {
+            const board = this._boardState.value;
+            board.activePlayer = this._activePlayer.value;
+            board.gameStatus = this._gameStatus.value;
+            this.socket.emit('movement', { board: board, id: this._id, roomCode: this._hostedRoomCode.value});
+        }
     }
 
     public reset(playerNumber?: number, opponentPlayerNumber?: number): void {

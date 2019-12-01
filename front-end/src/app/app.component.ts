@@ -11,7 +11,7 @@ import { BoardStateService } from './services/board-state.service';
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnDestroy, OnInit {
-    private gameroomCodeByUser: string = '';
+    private _gameroomCodeByUser: string = '';
     private _onlineMethod: number = 1;
     private _opponent: number = 1;
     private _subscriptions: Subscription[] = [];
@@ -131,7 +131,7 @@ export class AppComponent implements OnDestroy, OnInit {
     }
 
     public gameroomCodeEntered(code: string): void {
-        this.gameroomCodeByUser = code;
+        this._gameroomCodeByUser = code;
     }
 
     public getPlayerTurnMsg(): string {
@@ -171,10 +171,10 @@ export class AppComponent implements OnDestroy, OnInit {
     }
 
     public startGame(playerNumber: number): void {
-        console.log('startGame', this._opponent, this._onlineMethod, this.gameroomCodeByUser);
+        console.log('startGame', this._opponent, this._onlineMethod, this._gameroomCodeByUser);
         if (this._opponent === 3 && this._onlineMethod === 2) {
             this._boardStateService.joiningRoom();
-            this._boardStateService.joinGameroom(this.gameroomCodeByUser);
+            this._boardStateService.joinGameroom(this._gameroomCodeByUser);
         } else if (this._opponent === 3 && this._onlineMethod === 1) {
             this._boardStateService.joiningRoom();
             this._boardStateService.changePlayerNumber(playerNumber);

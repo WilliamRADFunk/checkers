@@ -3,6 +3,8 @@ import { Express } from 'express';
 import * as http from 'http';
 import * as socketIO from 'socket.io';
 
+import { Board } from '../../front-end/src/app/models/board';
+
 const  allowedDomains = [
 	'http://localhost:4200',
 	'http://www.williamrobertfunk.com'
@@ -14,7 +16,7 @@ export class ExpressWrapper {
     private _io = socketIO(this._server);
     private _port: number = 4444;
     private _socket;
-    private _rooms: { [key: string]: { player1: string; player2: string } } = {};
+    private _rooms: { [key: string]: { previousBoard: Board, player1: string; player2: string } } = {};
 
 	constructor() {
         this._io.on("connection", socket => {
@@ -34,6 +36,7 @@ export class ExpressWrapper {
         // If the room code isn't registered yet, set it up.
         if (data.roomCode && !this._rooms[data.roomCode]) {
             this._rooms[data.roomCode] = {
+                previousBoard: null,
                 player1: null,
                 player2: null
             };
@@ -75,5 +78,7 @@ export class ExpressWrapper {
     
     private _makeMove(data): void {
         console.log('player makes a move');
+        this._rooms[data.roomCode].previousBoard = data.board;
+        this._io.emit('move made', { board: data.board, id: data.id, roomCode: data.roomCode });
     }
 }
