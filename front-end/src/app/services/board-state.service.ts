@@ -30,7 +30,7 @@ export class BoardStateService {
     // 0 == not over, 1 == player 1 wins, 2 == player 2 wins.
     private readonly _gameStatus: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     private _hostedRoomCode: BehaviorSubject<string> = new BehaviorSubject<string>('');
-    private readonly _id: string;
+    private readonly _id: string = uuidv1.default();
     private _joiningRoom: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     private _memoizationTable: { [key: string]: number } = {};
     private _moveChainCells: Cell[] = [];
@@ -58,24 +58,25 @@ export class BoardStateService {
     readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
 
     constructor(private socket: Socket) {
-        this._id = this.socket.ioSocket.id;
-        this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
         this.socket.on('joined room', data => {
             console.log('joined room', data);
             if (data && data.playerNumber && data.id === this._id) {
                 this._playersNumber.next(data.playerNumber);
-                if (this._activePlayer.value === data.playerNumber) {
-                    this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
-                } else {
-                    this._clickableCellIds.next([]);
-                    this._readyToSubmit.next(false);
-                    this._moveChainIds.next([]);
-                    this._moveChainCells = [];
-                }
             }
 
             if (data && data.roomFull) {
-                this._joiningRoom.next(false);
+                setTimeout(() => {
+                    this._joiningRoom.next(false);
+                    if (this._activePlayer.value === this._playersNumber.value) {
+                        console.log('This person\'s turn');
+                        this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
+                    } else {
+                        this._clickableCellIds.next([]);
+                        this._readyToSubmit.next(false);
+                        this._moveChainIds.next([]);
+                        this._moveChainCells = [];
+                    }
+                }, 100);
             }
         });
     }
@@ -189,8 +190,13 @@ export class BoardStateService {
             this._takeAITurn();
         } else if (this._opponent === 3 && this._onlineMethod === 1) {
             this._registerHostRoom(playerNumber);
+        } else {
+            this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
         }
-        this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
+    }
+
+    public disconnectSocket() {
+        this.socket.emit('disconnect', { id: this._id });
     }
 
     public getActivePlayer(): number {

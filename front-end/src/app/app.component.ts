@@ -38,6 +38,8 @@ export class AppComponent implements OnDestroy, OnInit {
         }
         this._subscriptions.forEach(sub => sub && sub.unsubscribe());
         this._subscriptions.length = 0;
+
+        this._boardStateService.disconnectSocket();
     }
 
     ngOnInit() {
