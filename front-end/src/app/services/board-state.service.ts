@@ -60,15 +60,17 @@ export class BoardStateService {
     constructor(private socket: Socket) {
         this.socket.on('joined room', data => {
             console.log('joined room', data);
+            let thisPlayer = false;
             if (data && data.playerNumber && data.id === this._id) {
                 this._playersNumber.next(data.playerNumber);
+                thisPlayer = true;
             }
 
             if (data && data.roomFull) {
                 setTimeout(() => {
                     this._joiningRoom.next(false);
-                    console.log('This person\'s turn', data.playerNumber, this._playersNumber.value, this._activePlayer.value);
-                    if (this._activePlayer.value === this._playersNumber.value) {
+                    console.log('Room Full', data.playerNumber, this._playersNumber.value, this._activePlayer.value);
+                    if ((thisPlayer && this._activePlayer.value === data.playerNumber) || this._activePlayer.value === this._playersNumber.value) {
                         console.log('This person\'s turn');
                         this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
                     } else {
@@ -84,24 +86,23 @@ export class BoardStateService {
             if (data && data.roomCode === this._hostedRoomCode.value && data.id !== this._id) {
                 this._boardState.next(data.board);
                 this._activePlayer.next(data.board.activePlayer);
-                setTimeout(() => {
-                    this._gameStatus.next(data.board.gameStatus);
-                    // If game is over don't bother calculating moves.
-                    if (data.board.gameStatus) {
-                        return;
-                    }
-                    // Calculate moves on new board state based off of who active player is this turn.
-                    if (this._activePlayer.value === this._playersNumber.value) {
-                        console.log('This person\'s turn');
-                        this._opponentThinking.next(false);
-                        this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
-                    } else {
-                        this._clickableCellIds.next([]);
-                        this._readyToSubmit.next(false);
-                        this._moveChainIds.next([]);
-                        this._moveChainCells = [];
-                    }
-                }, 100);
+                this._gameStatus.next(data.board.gameStatus);
+                // If game is over don't bother calculating moves.
+                if (data.board.gameStatus) {
+                    return;
+                }
+                // Calculate moves on new board state based off of who active player is this turn.
+                if (data.board.activePlayer === this._playersNumber.value) {
+                    console.log('This person\'s turn');
+                    this._opponentThinking.next(false);
+                    this._clickableCellIds.next(findClickableCells(data.board.activePlayer, data.board, []));
+                } else {
+                    console.log('Not this person\'s turn');
+                    this._clickableCellIds.next([]);
+                    this._readyToSubmit.next(false);
+                    this._moveChainIds.next([]);
+                    this._moveChainCells = [];
+                }
             }
         });
     }
