@@ -15,10 +15,6 @@ import { findClickableCells } from '../utils/find-clickable-cells';
 import { makeMoves } from '../utils/make-moves';
 import { resetBoard } from '../utils/reset-board';
 
-const INTERFACE_URL = 'http://www.williamrobertfunk.com';
-// const DATA_URL = 'http://000.00.000.0:5000/';
-const DATA_URL = 'http://localhost:5000/';
-
 @Injectable({
     providedIn: 'root'
 })
@@ -70,9 +66,11 @@ export class BoardStateService {
                 setTimeout(() => {
                     this._joiningRoom.next(false);
                     console.log('Room Full', data.playerNumber, this._playersNumber.value, this._activePlayer.value);
-                    if ((thisPlayer && this._activePlayer.value === data.playerNumber) || this._activePlayer.value === this._playersNumber.value) {
+                    if ((thisPlayer && this._activePlayer.value === data.playerNumber)
+                        || this._activePlayer.value === this._playersNumber.value) {
                         console.log('This person\'s turn');
-                        this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
+                        this._clickableCellIds.next(
+                            findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
                     } else {
                         this._clickableCellIds.next([]);
                         this._readyToSubmit.next(false);
@@ -238,7 +236,7 @@ export class BoardStateService {
     }
 
     public joinGameroom(code: string): void {
-        this._hostedRoomCode.next(code);        
+        this._hostedRoomCode.next(code);
         this.socket.emit('new player', { roomCode: code, id: this.socket.ioSocket.id });
     }
 
