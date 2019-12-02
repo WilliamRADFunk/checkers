@@ -55,7 +55,7 @@ export class BoardStateService {
 
     constructor(private socket: Socket) {
         this.socket.on('joined room', data => {
-            console.log('joined room', data);
+            console.log('joined room', data, this._id);
             let thisPlayer = false;
             if (data && data.playerNumber && data.id === this._id) {
                 this._playersNumber.next(data.playerNumber);
@@ -126,7 +126,7 @@ export class BoardStateService {
     }
 
     private _registerHostRoom(playerNumber: number): void {
-        this.socket.emit('new player', { roomCode: this._hostedRoomCode.value, player: playerNumber, id: this.socket.ioSocket.id });
+        this.socket.emit('new player', { roomCode: this._hostedRoomCode.value, player: playerNumber, id: this._id });
     }
 
     private _takeAITurn(): void {
@@ -237,7 +237,7 @@ export class BoardStateService {
 
     public joinGameroom(code: string): void {
         this._hostedRoomCode.next(code);
-        this.socket.emit('new player', { roomCode: code, id: this.socket.ioSocket.id });
+        this.socket.emit('new player', { roomCode: code, id: this._id });
     }
 
     public joiningRoom(): void {
@@ -253,6 +253,10 @@ export class BoardStateService {
             board.activePlayer = this._activePlayer.value;
             board.gameStatus = this._gameStatus.value;
             this.socket.emit('movement', { board: board, id: this._id, roomCode: this._hostedRoomCode.value});
+            this._clickableCellIds.next([]);
+            this._readyToSubmit.next(false);
+            this._moveChainIds.next([]);
+            this._moveChainCells = [];
         }
     }
 
