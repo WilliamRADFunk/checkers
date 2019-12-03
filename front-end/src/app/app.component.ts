@@ -31,7 +31,7 @@ export class AppComponent implements OnDestroy, OnInit {
     constructor(
         private readonly _boardStateService: BoardStateService,
         private modalService: NgbModal) { }
-    
+
     ngOnDestroy() {
         if (this.modalService.hasOpenModals()) {
             this.modalService.dismissAll();
@@ -171,12 +171,13 @@ export class AppComponent implements OnDestroy, OnInit {
     }
 
     public startGame(playerNumber: number): void {
-        console.log('startGame', this._opponent, this._onlineMethod, this._gameroomCodeByUser);
         if (this._opponent === 3 && this._onlineMethod === 2) {
             this._boardStateService.joiningRoom();
             this._boardStateService.joinGameroom(this._gameroomCodeByUser);
         } else if (this._opponent === 3 && this._onlineMethod === 1) {
             this._boardStateService.joiningRoom();
+            this._boardStateService.changePlayerNumber(playerNumber);
+        } else if (this._opponent === 2) {
             this._boardStateService.changePlayerNumber(playerNumber);
         }
         this.gameOverAck = false;

@@ -208,8 +208,9 @@ export class BoardStateService {
 
     public changePlayerNumber(playerNumber: number): void {
         this._playersNumber.next(playerNumber);
-        this._opponentPlayerNumber.next(playerNumber === 1 ? 2 : 1);
-        if (this._opponent === 2 && this._activePlayer.value === this._opponentPlayerNumber.value) {
+        const opponent = playerNumber === 1 ? 2 : 1;
+        this._opponentPlayerNumber.next(opponent);
+        if (this._opponent === 2 && this._activePlayer.value === opponent) {
             this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
             this._takeAITurn();
         } else if (this._opponent === 3 && this._onlineMethod === 1) {
