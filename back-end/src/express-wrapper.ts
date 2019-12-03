@@ -1,6 +1,8 @@
 import * as express from 'express';
 import { Express } from 'express';
 import * as http from 'http';
+
+import * as uuidv1 from 'uuid/v1';
 import * as socketIO from 'socket.io';
 
 import { Board } from '../../front-end/src/app/models/board';
@@ -15,8 +17,9 @@ export class ExpressWrapper {
     private _server = new http.Server(this._app);
     private _io = socketIO(this._server);
     private _port: number = 4444;
-    private _socket;
+    private _queue: { roomCode: string, playerId: string } = null;
     private _rooms: { [key: string]: { previousBoard: Board, player1: string; player2: string } } = {};
+    private _socket;
 
 	constructor() {
         this._io.on("connection", socket => {
@@ -42,6 +45,20 @@ export class ExpressWrapper {
             };
         } else if (!data.roomCode) {
             console.error('No room code provided for player registration.');
+            if (this._queue && this._queue.roomCode && this._queue.playerId) {
+                this._rooms[this._queue.roomCode] = {
+                    previousBoard: null,
+                    player1: this._queue.playerId,
+                    player2: data.id
+                };
+            } else {
+                this._queue = {
+                    roomCode: uuidv1(),
+                    playerId: data.id
+                };
+            }
+            this._io.emit('joined room', { id: data.id, roomFull: (this._rooms[this._queue.roomCode] && !!this._rooms[data.roomCode].player1 && !!this._rooms[data.roomCode].player2), playerNumber: data.player });
+            return;
         }
         // Register the player that is stated in the data packet, if it's there.
         if (data.player) {
