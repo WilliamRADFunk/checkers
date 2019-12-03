@@ -63,6 +63,9 @@ export class BoardStateService {
             }
 
             if (data && data.roomFull) {
+                if (!this._hostedRoomCode.value && data.roomCode) {
+                    this._hostedRoomCode.next(data.roomCode);
+                }
                 setTimeout(() => {
                     this._joiningRoom.next(false);
                     console.log('Room Full', data.playerNumber, this._playersNumber.value, this._activePlayer.value);
@@ -236,9 +239,9 @@ export class BoardStateService {
         return this._opponent;
     }
 
-    public joinGameroom(code: string): void {
-        this._hostedRoomCode.next(code);
-        this.socket.emit('new player', { roomCode: code, id: this._id });
+    public joinGameroom(code?: string): void {
+        this._hostedRoomCode.next(code || '');
+        this.socket.emit('new player', { roomCode: code || null, id: this._id });
     }
 
     public joiningRoom(): void {

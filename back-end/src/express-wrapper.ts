@@ -44,7 +44,7 @@ export class ExpressWrapper {
                 player2: null
             };
         } else if (!data.roomCode) {
-            console.error('No room code provided for player registration.');
+            console.log('No room code provided for player registration.');
             if (this._queue && this._queue.roomCode && this._queue.playerId) {
                 this._rooms[this._queue.roomCode] = {
                     previousBoard: null,
@@ -57,7 +57,13 @@ export class ExpressWrapper {
                     playerId: data.id
                 };
             }
-            this._io.emit('joined room', { id: data.id, roomFull: (this._rooms[this._queue.roomCode] && !!this._rooms[data.roomCode].player1 && !!this._rooms[data.roomCode].player2), playerNumber: data.player });
+            console.log('Room Code: ', this._rooms[this._queue.roomCode]);
+            this._io.emit('joined room', {
+                id: data.id,
+                roomFull: (this._rooms[this._queue.roomCode] && !!this._rooms[this._queue.roomCode].player1 && !!this._rooms[this._queue.roomCode].player2),
+                playerNumber: (this._rooms[this._queue.roomCode] && this._rooms[this._queue.roomCode].player2) ? 2 : 1,
+                roomCode: this._queue.roomCode
+            });
             return;
         }
         // Register the player that is stated in the data packet, if it's there.
