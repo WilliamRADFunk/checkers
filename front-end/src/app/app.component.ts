@@ -189,7 +189,7 @@ export class AppComponent implements OnDestroy, OnInit {
                     break;
                 }
             }
-        } else if (this._opponent === 2) {
+        } else {
             this._boardStateService.changePlayerNumber(playerNumber);
         }
         this.gameOverAck = false;

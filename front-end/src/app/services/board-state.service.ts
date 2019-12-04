@@ -34,12 +34,10 @@ export class BoardStateService {
     private _onlineMethod = 1;
     // 1 == Local human player, 2 == AI player, 3 == Online human player.
     private _opponent: number = 1;
+    private readonly _opponentPlayerNumber: BehaviorSubject<number> = new BehaviorSubject<number>(2);
     private readonly _opponentThinking: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    private readonly _playersNumber: BehaviorSubject<number> = new BehaviorSubject<number>(Math.random() > 0.5 ? 1 : 2);
+    private readonly _playersNumber: BehaviorSubject<number> = new BehaviorSubject<number>(1);
     private readonly _readyToSubmit: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
-    private readonly _opponentPlayerNumber: BehaviorSubject<number> = new BehaviorSubject<number>(this._playersNumber.value === 2 ? 1 : 2);
-
 
     readonly currActivePlayer: Observable<number> = this._activePlayer.asObservable();
     readonly currBoardState: Observable<Board> = this._boardState.asObservable();

@@ -15,6 +15,7 @@
         background-image: url("../../assets/images/frogo-red-king.png");
     }
 }
+
 .silver-team-color {
     background-image: url("../../assets/images/frogo-silver.png");
     background-repeat: no-repeat;
@@ -29,3 +30,18 @@
         background-image: url("../../assets/images/frogo-silver-king.png");
     }
 }
+
+ /* Fade-In Effect */
+ .visible
+ {
+         visibility: visible;
+         opacity: 1;
+         transition: opacity 4s linear;
+ }                
+ /* Fade-Out Effect */
+ .hidden
+ {
+         visibility: hidden;
+         opacity: 0;
+         transition: visibility 0s 4s, opacity 4s linear;
+ }  
