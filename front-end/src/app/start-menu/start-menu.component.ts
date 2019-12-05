@@ -25,7 +25,7 @@ export class StartMenuComponent implements OnDestroy, OnInit {
     @Output() startSelected: EventEmitter<number> = new EventEmitter<number>();
 
     constructor() { }
-    
+
     ngOnDestroy() {
         this._subscriptions.forEach(sub => sub && sub.unsubscribe());
         this._subscriptions.length = 0;

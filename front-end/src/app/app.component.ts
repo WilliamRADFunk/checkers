@@ -172,7 +172,7 @@ export class AppComponent implements OnDestroy, OnInit {
 
     public startGame(playerNumber: number): void {
         if (this._opponent === 3) {
-            switch(this._onlineMethod) {
+            switch (this._onlineMethod) {
                 case 1: {
                     this._boardStateService.joiningRoom();
                     this._boardStateService.changePlayerNumber(playerNumber);

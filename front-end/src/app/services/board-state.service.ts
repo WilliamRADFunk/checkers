@@ -251,10 +251,10 @@ export class BoardStateService {
         makeMoves(this._boardState.value, moveChainIds || this._moveChainIds.value, moveChainCells || this._moveChainCells);
         this._changeTurn();
         if (this._opponent === 3) {
-            const board = this._boardState.value;
-            board.activePlayer = this._activePlayer.value;
-            board.gameStatus = this._gameStatus.value;
-            this.socket.emit('movement', { board: board, id: this._id, roomCode: this._hostedRoomCode.value});
+            const boardState = this._boardState.value;
+            boardState.activePlayer = this._activePlayer.value;
+            boardState.gameStatus = this._gameStatus.value;
+            this.socket.emit('movement', { board: boardState, id: this._id, roomCode: this._hostedRoomCode.value});
             this._clickableCellIds.next([]);
             this._readyToSubmit.next(false);
             this._moveChainIds.next([]);
