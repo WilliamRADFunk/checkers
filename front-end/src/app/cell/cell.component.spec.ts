@@ -1,9 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
 import { CellComponent } from './cell.component';
 import { ManComponent } from '../man/man.component';
+
+const config: SocketIoConfig = { url: 'http://localhost:4444', options: {} };
 
 describe('CellComponent', () => {
     let component: CellComponent;
@@ -13,7 +16,8 @@ describe('CellComponent', () => {
         TestBed.configureTestingModule({
             imports: [
                 NgbModule,
-                RouterTestingModule
+                RouterTestingModule,
+                SocketIoModule.forRoot(config)
             ],
             declarations: [
                 CellComponent,
