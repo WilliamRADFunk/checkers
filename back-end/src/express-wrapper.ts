@@ -94,13 +94,13 @@ export class ExpressWrapper {
                 this._rooms[roomCode].player2 = null;
             }
             if (!this._rooms[roomCode].player1 && !this._rooms[roomCode].player2) {
+                console.log('leaving room');
                 delete this._rooms[roomCode];
             }
         });
     }
     
     private _makeMove(data): void {
-        console.log('player makes a move');
         this._rooms[data.roomCode].previousBoard = data.board;
         this._io.emit('move made', { board: data.board, id: data.id, roomCode: data.roomCode });
     }

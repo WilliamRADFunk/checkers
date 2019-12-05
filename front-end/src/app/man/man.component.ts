@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import {
     trigger,
     state,
@@ -15,33 +15,17 @@ import { Cell } from '../models/cell';
     styleUrls: ['./man.component.scss'],
     animations: [
         trigger('fadein', [
-            state('stateName', style({
-                visibility: 'visible',
-                opacity: 1,
-                transition: 'opacity 4s linear'
-            })),
-            transition('initial=>final', animate('1500ms')),
-            transition('final=>initial', animate('1000ms'))
+            state('in', style({opacity: 1})),
+            // fade in when created. this could also be written as transition('void => *')
+            transition(':enter', [ style({opacity: 0}), animate(1000) ]),
+            // fade out when destroyed. this could also be written as transition('void => *')
+            transition(':leave', animate(1000, style({opacity: 0})))
         ])
     ]
 })
-export class ManComponent implements OnChanges, OnInit {
+export class ManComponent {
     @Input() cell: Cell;
-    currentState = 'initial';
+    public currentState = 'initial';
 
     constructor() { }
-
-    ngOnInit() {
-        if (this.cell.value) {
-            this.changeState();
-        }
-    }
-
-    ngOnChanges(e) {
-
-    }
-
-    changeState() {
-        this.currentState = this.currentState === 'initial' ? 'final' : 'initial';
-    }
 }
