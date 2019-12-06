@@ -7,7 +7,8 @@
 				<div class="row no-gutters">
 					<checkers-cell
 						*ngFor="let col of [0, 1, 2, 3, 4, 5, 6, 7];"
-						[cell]="board.cellStates[row][col]"></checkers-cell>
+                        [cell]="board.cellStates[row][col]"
+                        [style]="style"></checkers-cell>
 				</div>
 			</div>
 		</div>

@@ -112,6 +112,10 @@ export class AppComponent implements OnDestroy, OnInit {
         this._boardStateService.changeDifficulty(e);
     }
 
+    public changeStyle(e: number): void {
+        this._boardStateService.changeStyleOfPieces(e);
+    }
+
     public changeOnlineMethod(e: number): void {
         this._onlineMethod = e;
         this._boardStateService.changeOnlineMethod(e);

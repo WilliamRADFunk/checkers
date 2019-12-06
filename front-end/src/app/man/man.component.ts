@@ -25,7 +25,8 @@ import { Cell } from '../models/cell';
 })
 export class ManComponent {
     @Input() cell: Cell;
+    @Input() style: number;
     public currentState = 'initial';
 
-    constructor() { }
+    constructor() { console.log('style', this.style); }
 }

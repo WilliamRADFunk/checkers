@@ -38,6 +38,7 @@ export class BoardStateService {
     private readonly _opponentThinking: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     private readonly _playersNumber: BehaviorSubject<number> = new BehaviorSubject<number>(1);
     private readonly _readyToSubmit: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    private readonly _styleOFPieces: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
     readonly currActivePlayer: Observable<number> = this._activePlayer.asObservable();
     readonly currBoardState: Observable<Board> = this._boardState.asObservable();
@@ -50,6 +51,7 @@ export class BoardStateService {
     readonly currOpponentThinking: Observable<boolean> = this._opponentThinking.asObservable();
     readonly currPlayerNumber: Observable<number> = this._playersNumber.asObservable();
     readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
+    readonly currStyleOFPieces: Observable<number> = this._styleOFPieces.asObservable();
 
     constructor(private socket: Socket) {
         this.socket.on('joined room', data => {
@@ -219,6 +221,9 @@ export class BoardStateService {
         } else {
             this._clickableCellIds.next(findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
         }
+    }
+    public changeStyleOfPieces(style: number): void {
+        this._styleOFPieces.next(style);
     }
 
     public disconnectSocket() {

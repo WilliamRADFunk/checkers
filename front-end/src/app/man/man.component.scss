@@ -31,17 +31,14 @@
     }
 }
 
- /* Fade-In Effect */
- .visible
- {
-         visibility: visible;
-         opacity: 1;
-         transition: opacity 4s linear;
- }                
- /* Fade-Out Effect */
- .hidden
- {
-         visibility: hidden;
-         opacity: 0;
-         transition: visibility 0s 4s, opacity 4s linear;
- }  
+.fa,
+.fa-circle {
+    border: 1px solid #FFFFFF;
+    border-radius: 50%;
+    &.red {
+        color: #FF0000;
+    }
+    &.silver {
+        color: #696666;
+    }
+}

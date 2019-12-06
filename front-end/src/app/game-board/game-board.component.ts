@@ -16,6 +16,7 @@ export class GameBoardComponent implements OnDestroy, OnInit {
     public isLoading: boolean = true;
     public playerNumber: number;
     private _subscriptions: Subscription[] = [];
+    public style: number = 0;
 
     constructor(private readonly _boardStateService: BoardStateService) { }
 
@@ -31,6 +32,10 @@ export class GameBoardComponent implements OnDestroy, OnInit {
             }),
             this._boardStateService.currPlayerNumber.pipe(filter(x => !!x)).subscribe((pn: number) => {
                 this.playerNumber = pn;
+            }),
+            this._boardStateService.currStyleOFPieces.subscribe(style => {
+                console.log('ChangeDetected', style);
+                this.style = style;
             })
         );
     }

@@ -88,6 +88,27 @@
             </div>
         </div>
     </ng-container>
+    <div class="d-flex justify-content-center">
+        <div class="col text-center text-white mt-5">
+            <span class="h5 mt-5">Style of Pieces</span>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <div class="col text-center text-white mt-1">
+            <div class="btn-group btn-group-lg d-lg-inline-block">
+                <button *ngFor="let choice of [1, 2, 3]"
+                    class="btn text-shadow shadow"
+                    [class.btn-success]="activeStyle === choice"
+                    [class.btn-info]="activeStyle !== choice"
+                    (click)="styleChange(choice)"
+                    container="body"
+                    [ngbTooltip]="getTooltipStyleMsg(choice)"
+                    tooltipClass="checkers-tooltip"
+                    placement="top"
+                    type="button">{{ choice }}</button>
+            </div>
+        </div>
+    </div>
     <ng-container *ngIf="activeOpponent === 'Online Human'">
         <div class="d-flex justify-content-center">
             <div class="col text-center text-white mt-5">

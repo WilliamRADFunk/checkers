@@ -14,6 +14,8 @@ export class StartMenuComponent implements OnDestroy, OnInit {
     activeOnlineMethod: number = 1;
     activeOpponent: string = 'Local Human';
     gameroomCodeProvided: FormControl = new FormControl('');
+    activeStyle: number = 1;
+
     @Input() gameroomCode: string;
     @Input() playerNumber: number;
 
@@ -23,6 +25,7 @@ export class StartMenuComponent implements OnDestroy, OnInit {
     @Output() onlineMethodSelected: EventEmitter<number> = new EventEmitter<number>();
     @Output() opponentSelected: EventEmitter<number> = new EventEmitter<number>();
     @Output() startSelected: EventEmitter<number> = new EventEmitter<number>();
+    @Output() styleSelected: EventEmitter<number> = new EventEmitter<number>();
 
     constructor() { }
 
@@ -119,9 +122,31 @@ export class StartMenuComponent implements OnDestroy, OnInit {
         }
     }
 
+    public getTooltipStyleMsg(choice: number): string {
+        switch (choice) {
+            case 1: {
+                return `Frog checkers or "freckers"`;
+            }
+            case 2: {
+                return `Classic style chips`;
+            }
+            case 3: {
+                return `Classic style chips`;
+            }
+            default: {
+                return 'Not a valid option';
+            }
+        }
+    }
+
     public difficultyChange(choice: number): void {
         this.activeDifficulty = choice;
         this.difficultySelected.emit(choice);
+    }
+
+    public styleChange(choice: number): void {
+        this.activeStyle = choice;
+        this.styleSelected.emit(choice - 1);
     }
 
     public onlineMethodChange(choice: number): void {
