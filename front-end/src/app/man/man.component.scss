@@ -1,7 +1,8 @@
 .rotate {
     transform: rotate(180deg);
 }
-.red-team-color {
+.red-team-color,
+.red-knight-color {
     background-image: url("../../assets/images/frogo-red.png");
     background-repeat: no-repeat;
     background-position: left top;
@@ -16,7 +17,12 @@
     }
 }
 
-.silver-team-color {
+.red-knight-color {
+    background-image: url("../../assets/images/red-knight.png");
+}
+
+.silver-team-color,
+.silver-knight-color {
     background-image: url("../../assets/images/frogo-silver.png");
     background-repeat: no-repeat;
     background-position: left top;
@@ -31,10 +37,12 @@
     }
 }
 
+.silver-knight-color {
+    background-image: url("../../assets/images/silver-knight.png");
+}
+
 .fa,
-.fa-circle {
-    border: 1px solid #FFFFFF;
-    border-radius: 50%;
+.fa-chevron-circle-up {
     &.red {
         color: #FF0000;
     }

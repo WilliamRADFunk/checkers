@@ -1,10 +1,12 @@
 <ng-container *ngIf="cell.player === 1; else opponent">
     <div *ngIf="!style" class="silver-team-color" [class.king]="cell.value === 2" [@fadein]="'in'"></div>
-    <div *ngIf="style === 1" class="fa fa-circle silver" [class.fa-empire]="cell.value === 2" [@fadein]="'in'"></div>
+    <div *ngIf="style === 1" class="fa fa-chevron-circle-up fa-lg silver" [class.fa-empire]="cell.value === 2" [@fadein]="'in'"></div>
+    <div *ngIf="style === 2" class="silver-knight-color" [class.king]="cell.value === 2" [@fadein]="'in'"></div>
 </ng-container>
 <ng-template #opponent>
     <ng-container *ngIf="cell.player === 2">
         <div *ngIf="!style" class="rotate red-team-color" [class.king]="cell.value === 2" [@fadein]="'in'"></div>
-        <div *ngIf="style === 1" class="rotate fa fa-circle red" [class.fa-empire]="cell.value === 2" [@fadein]="'in'"></div>
+        <div *ngIf="style === 1" class="rotate fa fa-chevron-circle-up fa-lg red" [class.fa-empire]="cell.value === 2" [@fadein]="'in'"></div>
+        <div *ngIf="style === 2" class="red-knight-color" [class.king]="cell.value === 2" [@fadein]="'in'"></div>
     </ng-container>
 </ng-template>
