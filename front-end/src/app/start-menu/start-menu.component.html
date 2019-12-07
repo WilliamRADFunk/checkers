@@ -96,16 +96,18 @@
     <div class="d-flex justify-content-center">
         <div class="col text-center text-white mt-1">
             <div class="btn-group btn-group-lg d-lg-inline-block">
-                <button *ngFor="let choice of [1, 2, 3]"
+                <button *ngFor="let choice of [{ id: 1, class: 'red-team-color' }, { id: 2, class: 'fa fa-chevron-circle-up fa-lg' }, { id: 3, class: 'red-knight-color' }]"
                     class="btn text-shadow shadow"
-                    [class.btn-success]="activeStyle === choice"
-                    [class.btn-info]="activeStyle !== choice"
-                    (click)="styleChange(choice)"
+                    [class.btn-success]="activeStyle === choice.id"
+                    [class.btn-info]="activeStyle !== choice.id"
+                    (click)="styleChange(choice.id)"
                     container="body"
-                    [ngbTooltip]="getTooltipStyleMsg(choice)"
+                    [ngbTooltip]="getTooltipStyleMsg(choice.id)"
                     tooltipClass="checkers-tooltip"
                     placement="top"
-                    type="button">{{ choice }}</button>
+                    type="button">
+                        <div [class]="choice.class"></div>
+                    </button>
             </div>
         </div>
     </div>
@@ -118,21 +120,22 @@
         <div class="d-flex justify-content-center">
             <div class="col text-center text-white mt-1">
                 <div class="btn-group btn-group-lg d-lg-inline-block">
-                    <button *ngFor="let choice of [1, 2, 3]"
+                    <button *ngFor="let choice of [{ id: 1, text: 'Host Game' }, { id: 2, text: 'Join Game' }, { id: 3, text: 'Random Match' }]"
                         class="btn text-shadow shadow"
-                        [class.btn-success]="activeOnlineMethod === choice"
-                        [class.btn-info]="activeOnlineMethod !== choice"
-                        (click)="onlineMethodChange(choice)"
+                        [class.btn-success]="activeOnlineMethod === choice.id"
+                        [class.btn-info]="activeOnlineMethod !== choice.id"
+                        (click)="onlineMethodChange(choice.id)"
                         container="body"
-                        [ngbTooltip]="getTooltipOMMsg(choice)"
+                        [ngbTooltip]="getTooltipOMMsg(choice.id)"
                         tooltipClass="checkers-tooltip"
                         placement="top"
-                        type="button">{{ choice }}</button>
+                        type="button">{{ choice.text }}</button>
                 </div>
             </div>
         </div>
         <div *ngIf="gameroomCode && activeOnlineMethod === 1" class="d-flex justify-content-center">
             <div class="col text-center text-white mt-3 mb-1">
+                <p>Room Key</p>
                 <span class="border rounded p-2">
                     {{ gameroomCode }}
                 </span>
@@ -140,8 +143,9 @@
         </div>
         <div *ngIf="activeOnlineMethod === 2" class="d-flex justify-content-center">
             <div class="col text-center text-white mt-3 mb-1">
+                <p>Enter Room Key</p>
                 <span class="border rounded p-2">
-                    <input type="text" [formControl]="gameroomCodeProvided"/>
+                    <input type="text" [formControl]="gameroomCodeProvided" style="min-width: 315px;"/>
                 </span>
             </div>
         </div>
