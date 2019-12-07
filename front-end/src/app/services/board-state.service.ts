@@ -55,7 +55,6 @@ export class BoardStateService {
 
     constructor(private socket: Socket) {
         this.socket.on('joined room', data => {
-            console.log('joined room', data, this._id);
             let thisPlayer = false;
             if (data && data.playerNumber && data.id === this._id) {
                 this._playersNumber.next(data.playerNumber);
@@ -68,10 +67,8 @@ export class BoardStateService {
                 }
                 setTimeout(() => {
                     this._joiningRoom.next(false);
-                    console.log('Room Full', data.playerNumber, this._playersNumber.value, this._activePlayer.value);
                     if ((thisPlayer && this._activePlayer.value === data.playerNumber)
                         || this._activePlayer.value === this._playersNumber.value) {
-                        console.log('This person\'s turn');
                         this._clickableCellIds.next(
                             findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
                     } else {
@@ -84,9 +81,11 @@ export class BoardStateService {
             }
         });
         this.socket.on('move made', data => {
-            console.log('move made');
-            if (data && data.roomCode === this._hostedRoomCode.value && data.id !== this._id) {
-                this._gameStatus.next(data.board.gameStatus);
+            if (data && data.roomCode !== this._hostedRoomCode.value) {
+                return;
+            }
+            this._gameStatus.next(data.board.gameStatus);
+            if (data.id !== this._id) {
                 this._activePlayer.next(data.board.activePlayer || this._activePlayer.value);
                 this._boardState.next(data.board || this._boardState.value);
                 // If game is over don't bother calculating moves.
@@ -95,11 +94,9 @@ export class BoardStateService {
                 }
                 // Calculate moves on new board state based off of who active player is this turn.
                 if (data.board.activePlayer === this._playersNumber.value) {
-                    console.log('This person\'s turn');
                     this._opponentThinking.next(false);
                     this._clickableCellIds.next(findClickableCells(data.board.activePlayer, data.board, []));
                 } else {
-                    console.log('Not this person\'s turn');
                     this._clickableCellIds.next([]);
                     this._readyToSubmit.next(false);
                     this._moveChainIds.next([]);

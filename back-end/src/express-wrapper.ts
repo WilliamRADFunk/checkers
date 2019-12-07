@@ -114,7 +114,7 @@ export class ExpressWrapper {
             } else {
                 this._rooms[roomCode].previousBoard = this._rooms[roomCode].previousBoard ? this._rooms[roomCode].previousBoard : {} as any;
                 this._rooms[roomCode].previousBoard.gameStatus = !!this._rooms[roomCode].player1 ? 1 : 2
-                console.log(`Player ${this._rooms[roomCode].previousBoard.gameStatus === 1 ? 1 : 2}: forfeits game`);
+                console.log(`Player ${this._rooms[roomCode].previousBoard.gameStatus === 1 ? 2 : 1}: forfeits game`);
                 this._io.emit('move made', {
                     board: this._rooms[roomCode].previousBoard,
                     id: this._rooms[roomCode].player1 ? this._rooms[roomCode].player1 : this._rooms[roomCode].player2,

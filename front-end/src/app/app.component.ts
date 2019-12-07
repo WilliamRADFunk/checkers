@@ -19,7 +19,7 @@ export class AppComponent implements OnDestroy, OnInit {
     public activePlayer: number;
     public canSubmitMove: boolean = false;
     @ViewChild('content', { static: true }) content: any;
-    public gameOver: boolean = false;
+    public gameOver: number = 0;
     public gameOverAck: boolean = true;
     public gameroomCode: string;
     public helpMode: boolean = false;
@@ -82,7 +82,7 @@ export class AppComponent implements OnDestroy, OnInit {
                 }),
             this._boardStateService.currGameStatus
                 .subscribe(gs => {
-                    this.gameOver = !!gs;
+                    this.gameOver = gs;
                     if (this.gameOver) {
                         this.modalService.open(this.content, {
                             centered: true,
