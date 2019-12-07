@@ -25,7 +25,14 @@ export class ExpressWrapper {
         this._io.on("connection", socket => {
             this._socket = socket;
 
-            this._socket.on('disconnect', this._leaveRoom.bind(this));
+            this._socket.on('disconnect', (data) => {
+                console.log('disconnect', data.id);
+                this._leaveRoom(data);
+            });
+            this._socket.on('quit', (data) => {
+                console.log('quit', data.id);
+                this._leaveRoom(data);
+            });
             this._socket.on('new player', this._joinRoom.bind(this));
             this._socket.on('movement', this._makeMove.bind(this));
         });
@@ -35,7 +42,7 @@ export class ExpressWrapper {
     }
     
     private _joinRoom(data): void {
-        console.log('new player called', data.roomCode, data.player, data.id);
+        console.log('new player called', `roomCode: (${data.roomCode}), playerNumber: (${data.player}), id: (${data.id})`);
         // If the room code isn't registered yet, set it up.
         if (data.roomCode && !this._rooms[data.roomCode]) {
             this._rooms[data.roomCode] = {
@@ -46,24 +53,30 @@ export class ExpressWrapper {
         } else if (!data.roomCode) {
             console.log('No room code provided for player registration.');
             if (this._queue && this._queue.roomCode && this._queue.playerId) {
+                console.log('~~~ 1 ~~~', 'Filling room with second player');
                 this._rooms[this._queue.roomCode] = {
                     previousBoard: null,
                     player1: this._queue.playerId,
                     player2: data.id
                 };
             } else {
+                console.log('~~~ 2 ~~~', 'Setting up room for first player');
                 this._queue = {
                     roomCode: uuidv1(),
                     playerId: data.id
                 };
             }
-            console.log('Room Code: ', this._rooms[this._queue.roomCode]);
+            const isRoomFull = (this._rooms[this._queue.roomCode] && !!this._rooms[this._queue.roomCode].player1 && !!this._rooms[this._queue.roomCode].player2);
+            console.log('Room Code: ', this._queue.roomCode, 'roomContents', this._rooms[this._queue.roomCode]);
             this._io.emit('joined room', {
                 id: data.id,
-                roomFull: (this._rooms[this._queue.roomCode] && !!this._rooms[this._queue.roomCode].player1 && !!this._rooms[this._queue.roomCode].player2),
+                roomFull: isRoomFull,
                 playerNumber: (this._rooms[this._queue.roomCode] && this._rooms[this._queue.roomCode].player2) ? 2 : 1,
                 roomCode: this._queue.roomCode
             });
+            if (isRoomFull) {
+                this._queue = null;
+            }
             return;
         }
         // Register the player that is stated in the data packet, if it's there.
@@ -88,14 +101,25 @@ export class ExpressWrapper {
         console.log('leaving room');
         Object.keys(this._rooms).forEach(roomCode => {
             if (this._rooms[roomCode].player1 === data.id) {
+                console.log('Player 1: leaving room');
                 this._rooms[roomCode].player1 = null;
             }
             if (this._rooms[roomCode].player2 === data.id) {
+                console.log('Player 2: leaving room');
                 this._rooms[roomCode].player2 = null;
             }
             if (!this._rooms[roomCode].player1 && !this._rooms[roomCode].player2) {
-                console.log('leaving room');
+                this._rooms[roomCode] = null;
                 delete this._rooms[roomCode];
+            } else {
+                this._rooms[roomCode].previousBoard = this._rooms[roomCode].previousBoard ? this._rooms[roomCode].previousBoard : {} as any;
+                this._rooms[roomCode].previousBoard.gameStatus = !!this._rooms[roomCode].player1 ? 1 : 2
+                console.log(`Player ${this._rooms[roomCode].previousBoard.gameStatus === 1 ? 1 : 2}: forfeits game`);
+                this._io.emit('move made', {
+                    board: this._rooms[roomCode].previousBoard,
+                    id: this._rooms[roomCode].player1 ? this._rooms[roomCode].player1 : this._rooms[roomCode].player2,
+                    roomCode: roomCode
+                });
             }
         });
     }

@@ -33,13 +33,13 @@ export class AppComponent implements OnDestroy, OnInit {
         private modalService: NgbModal) { }
 
     ngOnDestroy() {
+        this._boardStateService.disconnectSocket();
+
         if (this.modalService.hasOpenModals()) {
             this.modalService.dismissAll();
         }
         this._subscriptions.forEach(sub => sub && sub.unsubscribe());
         this._subscriptions.length = 0;
-
-        this._boardStateService.disconnectSocket();
     }
 
     ngOnInit() {
@@ -151,6 +151,8 @@ export class AppComponent implements OnDestroy, OnInit {
     }
 
     public goToMenu(): void {
+        this._boardStateService.disconnectSocket();
+
         if (this.modalService.hasOpenModals()) {
             this.modalService.dismissAll();
         }

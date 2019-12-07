@@ -84,10 +84,11 @@ export class BoardStateService {
             }
         });
         this.socket.on('move made', data => {
+            console.log('move made');
             if (data && data.roomCode === this._hostedRoomCode.value && data.id !== this._id) {
-                this._boardState.next(data.board);
-                this._activePlayer.next(data.board.activePlayer);
                 this._gameStatus.next(data.board.gameStatus);
+                this._activePlayer.next(data.board.activePlayer || this._activePlayer.value);
+                this._boardState.next(data.board || this._boardState.value);
                 // If game is over don't bother calculating moves.
                 if (data.board.gameStatus) {
                     return;
@@ -227,7 +228,8 @@ export class BoardStateService {
     }
 
     public disconnectSocket() {
-        this.socket.emit('disconnect', { id: this._id });
+        console.log('quit', this._id);
+        this.socket.emit('quit', { id: this._id });
     }
 
     public getActivePlayer(): number {

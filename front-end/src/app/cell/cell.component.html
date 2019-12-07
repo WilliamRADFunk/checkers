@@ -4,6 +4,10 @@
 	[class.hovered-cell]="highlighted"
 	[class.tracked-cell]="tracked">
 	<div class="font-weight-bold">
-		<checkers-man *ngIf="isOnSquare" [cell]="cell" [style]="style"></checkers-man>
+        <checkers-man
+            *ngIf="isOnSquare"
+            [cell]="cell" 
+            [playerNumber]="playerNumber"
+            [style]="style"></checkers-man>
 	</div>
 </div>

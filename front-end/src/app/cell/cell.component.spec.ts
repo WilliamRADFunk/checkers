@@ -36,6 +36,7 @@ describe('CellComponent', () => {
             position: [0, 0],
             value: 0
         };
+        component.playerNumber = 1;
         component.style = 0;
         fixture.detectChanges();
     });
