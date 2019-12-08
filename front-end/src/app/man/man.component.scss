@@ -19,6 +19,10 @@
 
 .red-knight-color {
     background-image: url("../../assets/images/red-knight.png");
+
+    &.king {
+        background-image: url("../../assets/images/red-knight-with-crown.png");
+    }
 }
 
 .silver-team-color,
@@ -39,6 +43,10 @@
 
 .silver-knight-color {
     background-image: url("../../assets/images/silver-knight.png");
+
+    &.king {
+        background-image: url("../../assets/images/silver-knight-with-crown.png");
+    }
 }
 
 .fa,

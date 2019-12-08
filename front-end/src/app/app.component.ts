@@ -24,10 +24,12 @@ export class AppComponent implements OnDestroy, OnInit {
     public gameroomCode: string;
     public helpMode: boolean = false;
     public isJoiningRoom: boolean = false;
+    public opponent: number = 1;
     public opponentIsThinking: boolean = false;
     public opponentPlayerNumber: number;
     public peoplePlaying: number = 0;
     public playerNumber: number;
+    public timer: number = 0;
 
     constructor(
         private readonly _boardStateService: BoardStateService,
@@ -52,6 +54,10 @@ export class AppComponent implements OnDestroy, OnInit {
             this._boardStateService.currPeoplePlaying
                 .subscribe(numPeople => {
                     this.peoplePlaying = numPeople;
+                }),
+            this._boardStateService.currTimer
+                .subscribe(time => {
+                    this.timer = time;
                 }),
             this._boardStateService.currOpponentThinking
                 .subscribe(isThinking => {
@@ -128,6 +134,7 @@ export class AppComponent implements OnDestroy, OnInit {
 
     public changeOpponent(e: number): void {
         this._opponent = e;
+        this.opponent = e;
         this._boardStateService.changeOpponent(e);
     }
 

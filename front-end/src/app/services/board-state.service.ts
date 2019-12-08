@@ -77,17 +77,16 @@ export class BoardStateService {
                     this._joiningRoom.next(false);
                     if ((thisPlayer && this._activePlayer.value === data.playerNumber)
                         || this._activePlayer.value === this._playersNumber.value) {
-                        this._clearTimeout();
                         this._clickableCellIds.next(
                             findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
                     } else {
-                        this._setInterval();
-
                         this._clickableCellIds.next([]);
                         this._readyToSubmit.next(false);
                         this._moveChainIds.next([]);
                         this._moveChainCells = [];
                     }
+                    this._clearTimeout();
+                    this._setInterval();
                 }, 100);
             }
         });
@@ -99,7 +98,7 @@ export class BoardStateService {
             this._gameStatus.next(data.board.gameStatus);
             if (data.id !== this._id) {
                 this._activePlayer.next(data.board.activePlayer || this._activePlayer.value);
-                this._boardState.next(data.board || this._boardState.value);
+                this._boardState.next(data.board && data.board.board || this._boardState.value);
                 // If game is over don't bother calculating moves.
                 if (data.board.gameStatus) {
                     return;
@@ -109,13 +108,12 @@ export class BoardStateService {
                     this._opponentThinking.next(false);
                     this._clickableCellIds.next(findClickableCells(data.board.activePlayer, data.board, []));
                 } else {
-                    this._setInterval();
-
                     this._clickableCellIds.next([]);
                     this._readyToSubmit.next(false);
                     this._moveChainIds.next([]);
                     this._moveChainCells = [];
                 }
+                this._setInterval();
             }
         });
     }
@@ -150,12 +148,17 @@ export class BoardStateService {
     }
 
     private _setInterval() {
+        this._timer.next(20);
         this._timerId = window.setInterval(() => {
             if (this._timer.value <= 0){
                 this._clearTimeout();
-                this.disconnectSocket(true);
+                if (this._activePlayer.value !== this._playersNumber.value) {
+                    this.disconnectSocket(true);
+                } else {
+                    this._gameStatus.next(this._activePlayer.value === 1 ? 2 : 1);
+                }
             } else {
-                this._timer.next(this._timer.value + 1);
+                this._timer.next(this._timer.value - 1);
             }
         }, 1000);
     }
