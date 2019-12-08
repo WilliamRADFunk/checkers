@@ -150,7 +150,7 @@ export class BoardStateService {
     private _setInterval() {
         this._timer.next(20);
         this._timerId = window.setInterval(() => {
-            if (this._timer.value <= 0){
+            if (this._timer.value <= 0) {
                 this._clearTimeout();
                 if (this._activePlayer.value !== this._playersNumber.value) {
                     this.disconnectSocket(true);
