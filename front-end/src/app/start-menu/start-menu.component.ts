@@ -128,10 +128,10 @@ export class StartMenuComponent implements OnDestroy, OnInit {
                 return `Frog checkers or "freckers"`;
             }
             case 2: {
-                return `Classic style chips`;
+                return `Classic checkers`;
             }
             case 3: {
-                return `Classic style chips`;
+                return `Knight checkers`;
             }
             default: {
                 return 'Not a valid option';
