@@ -18,6 +18,7 @@ export class StartMenuComponent implements OnDestroy, OnInit {
 
     @Input() gameroomCode: string;
     @Input() playerNumber: number;
+    @Input() peoplePlaying: number;
 
     @Output() difficultySelected: EventEmitter<number> = new EventEmitter<number>();
     @Output() gameroomCodeEntered: EventEmitter<string> = new EventEmitter<string>();

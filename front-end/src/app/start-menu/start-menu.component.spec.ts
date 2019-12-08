@@ -23,6 +23,7 @@ describe('StartMenuComponent', () => {
     component = fixture.componentInstance;
     component.gameroomCode = '';
     component.playerNumber = 1;
+    component.peoplePlaying = 1;
     fixture.detectChanges();
   });
 

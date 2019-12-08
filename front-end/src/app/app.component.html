@@ -59,6 +59,7 @@
                 (onlineMethodSelected)="changeOnlineMethod($event)"
                 (opponentSelected)="changeOpponent($event)"
                 [playerNumber]="playerNumber"
+                [peoplePlaying]="peoplePlaying"
                 (startSelected)="startGame($event)"
                 (styleSelected)="changeStyle($event)"></checkers-start-menu>
             <div *ngIf="!showStartMenu() && !helpMode" class="row no-gutters mt-1">
