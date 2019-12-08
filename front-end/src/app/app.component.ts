@@ -26,6 +26,7 @@ export class AppComponent implements OnDestroy, OnInit {
     public isJoiningRoom: boolean = false;
     public opponentIsThinking: boolean = false;
     public opponentPlayerNumber: number;
+    public peoplePlaying: number = 0;
     public playerNumber: number;
 
     constructor(
@@ -48,6 +49,10 @@ export class AppComponent implements OnDestroy, OnInit {
 
     private _subscriptionSetup(): void {
         this._subscriptions.push(
+            this._boardStateService.currPeoplePlaying
+                .subscribe(numPeople => {
+                    this.peoplePlaying = numPeople;
+                }),
             this._boardStateService.currOpponentThinking
                 .subscribe(isThinking => {
                     this.opponentIsThinking = isThinking;

@@ -16,6 +16,7 @@ export class ExpressWrapper {
     private _app: Express = express();
     private _server = new http.Server(this._app);
     private _io = socketIO(this._server);
+    private _people: number = 0;
     private _port: number = 4444;
     private _queue: { roomCode: string, playerId: string } = null;
     private _rooms: { [key: string]: { previousBoard: Board, player1: string; player2: string } } = {};
@@ -24,6 +25,8 @@ export class ExpressWrapper {
 	constructor() {
         this._io.on("connection", socket => {
             this._socket = socket;
+            this._people++;
+            this._io.emit('updated people count', { people: this._people });
 
             this._socket.on('disconnect', (data) => {
                 console.log('disconnect', data.id);
@@ -99,7 +102,25 @@ export class ExpressWrapper {
     
     private _leaveRoom(data): void {
         console.log('leaving room');
+        if (!data.id) {
+            this._people--;
+            this._io.emit('updated people count', { people: this._people });
+        }
         Object.keys(this._rooms).forEach(roomCode => {
+            if (data.timedout && (this._rooms[roomCode].player1 === data.id || data.id === this._rooms[roomCode].player2)) {
+                // Opposite user to caller is the player that forfeits.
+                if (this._rooms[roomCode].player1 === data.id) {
+                    console.log('Player 2: leaving room (via timeout)');
+                    this._rooms[roomCode].player2 = null;
+                } else if (this._rooms[roomCode].player2 === data.id) {
+                    console.log('Player 1: leaving room (via timeout)');
+                    this._rooms[roomCode].player1 = null;
+                }
+                this._forfeit(roomCode);
+                this._rooms[roomCode] = null;
+                delete this._rooms[roomCode];
+                return;
+            }
             if (this._rooms[roomCode].player1 === data.id) {
                 console.log('Player 1: leaving room');
                 this._rooms[roomCode].player1 = null;
@@ -111,16 +132,24 @@ export class ExpressWrapper {
             if (!this._rooms[roomCode].player1 && !this._rooms[roomCode].player2) {
                 this._rooms[roomCode] = null;
                 delete this._rooms[roomCode];
+                return;
             } else if ((!this._rooms[roomCode].player1 && this._rooms[roomCode].player2) || (this._rooms[roomCode].player1 && !this._rooms[roomCode].player2)) {
-                this._rooms[roomCode].previousBoard = this._rooms[roomCode].previousBoard ? this._rooms[roomCode].previousBoard : {} as any;
-                this._rooms[roomCode].previousBoard.gameStatus = !!this._rooms[roomCode].player1 ? 1 : 2
-                console.log(`Player ${this._rooms[roomCode].previousBoard.gameStatus === 1 ? 2 : 1}: forfeits game`);
-                this._io.emit('move made', {
-                    board: this._rooms[roomCode].previousBoard,
-                    id: this._rooms[roomCode].player1 ? this._rooms[roomCode].player1 : this._rooms[roomCode].player2,
-                    roomCode: roomCode
-                });
+                this._forfeit(roomCode);
+                this._rooms[roomCode] = null;
+                delete this._rooms[roomCode];
+                return;
             }
+        });
+    }
+
+    private _forfeit(roomCode: string) {
+        this._rooms[roomCode].previousBoard = this._rooms[roomCode].previousBoard ? this._rooms[roomCode].previousBoard : {} as any;
+        this._rooms[roomCode].previousBoard.gameStatus = !!this._rooms[roomCode].player1 ? 1 : 2
+        console.log(`Player ${this._rooms[roomCode].previousBoard.gameStatus === 1 ? 2 : 1}: forfeits game`);
+        this._io.emit('move made', {
+            board: this._rooms[roomCode].previousBoard,
+            id: this._rooms[roomCode].player1 ? this._rooms[roomCode].player1 : this._rooms[roomCode].player2,
+            roomCode: roomCode
         });
     }
     

@@ -36,9 +36,12 @@ export class BoardStateService {
     private _opponent: number = 1;
     private readonly _opponentPlayerNumber: BehaviorSubject<number> = new BehaviorSubject<number>(2);
     private readonly _opponentThinking: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    private readonly _peoplePlaying: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     private readonly _playersNumber: BehaviorSubject<number> = new BehaviorSubject<number>(1);
     private readonly _readyToSubmit: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     private readonly _styleOFPieces: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    private readonly _timer: BehaviorSubject<number> = new BehaviorSubject<number>(20);
+    private _timerId: number;
 
     readonly currActivePlayer: Observable<number> = this._activePlayer.asObservable();
     readonly currBoardState: Observable<Board> = this._boardState.asObservable();
@@ -49,11 +52,16 @@ export class BoardStateService {
     readonly currMoveChainIds: Observable<number[]> = this._moveChainIds.asObservable();
     readonly currOpponentPlayerNumber: Observable<number> = this._opponentPlayerNumber.asObservable();
     readonly currOpponentThinking: Observable<boolean> = this._opponentThinking.asObservable();
+    readonly currPeoplePlaying: Observable<number> = this._peoplePlaying.asObservable();
     readonly currPlayerNumber: Observable<number> = this._playersNumber.asObservable();
-    readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
     readonly currStyleOFPieces: Observable<number> = this._styleOFPieces.asObservable();
+    readonly currTimer: Observable<number> = this._timer.asObservable();
+    readonly readyToSubmit: Observable<boolean> = this._readyToSubmit.asObservable();
 
     constructor(private socket: Socket) {
+        this.socket.on('updated people count', data => {
+            this._peoplePlaying.next((data && data.people) || this._peoplePlaying.value);
+        });
         this.socket.on('joined room', data => {
             let thisPlayer = false;
             if (data && data.playerNumber && data.id === this._id) {
@@ -69,9 +77,12 @@ export class BoardStateService {
                     this._joiningRoom.next(false);
                     if ((thisPlayer && this._activePlayer.value === data.playerNumber)
                         || this._activePlayer.value === this._playersNumber.value) {
+                        this._clearTimeout();
                         this._clickableCellIds.next(
                             findClickableCells(this._activePlayer.value, this._boardState.value, this._moveChainCells));
                     } else {
+                        this._setInterval();
+
                         this._clickableCellIds.next([]);
                         this._readyToSubmit.next(false);
                         this._moveChainIds.next([]);
@@ -84,6 +95,7 @@ export class BoardStateService {
             if (data && data.roomCode !== this._hostedRoomCode.value) {
                 return;
             }
+            this._clearTimeout();
             this._gameStatus.next(data.board.gameStatus);
             if (data.id !== this._id) {
                 this._activePlayer.next(data.board.activePlayer || this._activePlayer.value);
@@ -97,6 +109,8 @@ export class BoardStateService {
                     this._opponentThinking.next(false);
                     this._clickableCellIds.next(findClickableCells(data.board.activePlayer, data.board, []));
                 } else {
+                    this._setInterval();
+
                     this._clickableCellIds.next([]);
                     this._readyToSubmit.next(false);
                     this._moveChainIds.next([]);
@@ -126,8 +140,24 @@ export class BoardStateService {
         }
     }
 
+    private _clearTimeout() {
+        clearInterval(this._timerId);
+        this._timerId = null;
+    }
+
     private _registerHostRoom(playerNumber: number): void {
         this.socket.emit('new player', { roomCode: this._hostedRoomCode.value, player: playerNumber, id: this._id });
+    }
+
+    private _setInterval() {
+        this._timerId = window.setInterval(() => {
+            if (this._timer.value <= 0){
+                this._clearTimeout();
+                this.disconnectSocket(true);
+            } else {
+                this._timer.next(this._timer.value + 1);
+            }
+        }, 1000);
     }
 
     private _takeAITurn(): void {
@@ -224,9 +254,9 @@ export class BoardStateService {
         this._styleOFPieces.next(style);
     }
 
-    public disconnectSocket() {
+    public disconnectSocket(opponentTimedout?: boolean) {
         console.log('quit', this._id);
-        this.socket.emit('quit', { id: this._id });
+        this.socket.emit('quit', { id: this._id, timedout: opponentTimedout });
     }
 
     public getActivePlayer(): number {
