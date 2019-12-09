@@ -15,7 +15,15 @@ import { BoardStateService } from './services/board-state.service';
 import { StartMenuComponent } from './start-menu/start-menu.component';
 import { HelpScreenComponent } from './help-screen/help-screen.component';
 
-const config: SocketIoConfig = { url: '157.245.226.187:4444', options: {} };
+// const config: SocketIoConfig = { url: '157.245.226.187:80', options: {} };
+const config: SocketIoConfig = {
+    url: 'https://157.245.226.187:443',
+    options: {
+        secure: true,
+        reconnect: true,
+        rejectUnauthorized: false
+    }
+};
 
 @NgModule({
     declarations: [

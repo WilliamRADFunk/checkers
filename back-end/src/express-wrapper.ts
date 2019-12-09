@@ -7,19 +7,25 @@ import * as uuidv1 from 'uuid/v1';
 import * as socketIO from 'socket.io';
 
 import { Board } from '../../front-end/src/app/models/board';
+let serverOptions: socketIO.ServerOptions;
 
 export class ExpressWrapper {
     private _app: Express = express();
     private _serverHttp = new http.Server(this._app);
     private _serverHttps = new https.Server(this._app);
     private _ioHttp = socketIO(this._serverHttp);
-    private _ioHttps = socketIO(this._serverHttps);
+    private _ioHttps = socketIO(this._serverHttps, {
+        origins: [
+            'https://tenaciousteal.com',
+            'https://tenaciousteal.com:443',
+            'https://tenaciousteal.com/games/checkers:443'
+        ]
+    });
     private _people: number = 0;
     private _queue: { roomCode: string, playerId: string } = null;
     private _rooms: { [key: string]: { previousBoard: Board, player1: string; player2: string } } = {};
-    private _socket;
 
-	constructor() {
+    constructor() {
         this._ioHttp.on("connection", socket => {
             this._people++;
             this._ioHttp.emit('updated people count', { people: this._people });
@@ -51,10 +57,10 @@ export class ExpressWrapper {
             socket.on('movement', this._makeMove.bind(this));
         });
 
-        this._serverHttp.listen(4444);
-		console.log(`app running on port: ${4444}`);
-        this._serverHttps.listen(4445);
-		console.log(`app running on port: ${4445}`);
+        this._serverHttp.listen(80);
+        console.log(`app running on port: ${80}`);
+        this._serverHttps.listen(443);
+        console.log(`app running on port: ${443}`);
     }
 
     private _joinRoom(data): void {
