@@ -20,6 +20,7 @@
         "es6-promise": "^4.2.8",
         "express": "^4.17.1",
         "graceful-fs": "^4.2.2",
+        "https": "^1.0.0",
         "rxjs": "^6.5.2",
         "socket.io": "^2.3.0",
         "uuid": "^3.3.3"

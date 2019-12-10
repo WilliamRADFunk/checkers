@@ -1,11 +1,11 @@
 # Checkers
-A just for fun, classic checkers game against an AI opponent.</br></br>
+A just for fun, classic checkers game against an AI opponent. Now with multiplayer support.</br></br>
 
 ***
 
 ## Intro
 
-Play classic checkers against an AI opponent.</br></br>
+Play classic checkers against an AI opponent (and multiplayer).</br></br>
 
 ***
 

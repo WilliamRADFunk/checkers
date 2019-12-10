@@ -57,6 +57,7 @@ export class ExpressWrapper {
             socket.on('movement', this._makeMove.bind(this));
         });
 
+        // this._serverHttp.listen(5000);
         this._serverHttp.listen(80);
         console.log(`app running on port: ${80}`);
         this._serverHttps.listen(443);
