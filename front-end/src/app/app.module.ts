@@ -17,7 +17,7 @@ import { HelpScreenComponent } from './help-screen/help-screen.component';
 
 // const config: SocketIoConfig = { url: '157.245.226.187:80', options: {} };
 const config: SocketIoConfig = {
-    url: 'https://157.245.226.187:443',
+    url: 'https://the-something-long-anonymous-thing.casa.the-something-long-anonymous-thing.casa:443',
     options: {
         secure: true,
         reconnect: true,
