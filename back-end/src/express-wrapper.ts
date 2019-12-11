@@ -7,7 +7,6 @@ import * as uuidv1 from 'uuid/v1';
 import * as socketIO from 'socket.io';
 
 import { Board } from '../../front-end/src/app/models/board';
-let serverOptions: socketIO.ServerOptions;
 
 export class ExpressWrapper {
     private _app: Express = express();
