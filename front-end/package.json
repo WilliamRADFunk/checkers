@@ -4,7 +4,7 @@
 	"scripts": {
 		"ng": "ng",
 		"start": "ng serve",
-		"build": "run-s clean build:ng copy:configs",
+		"build": "run-s clean lint test build:ng copy:configs",
 		"build:ng": "ng build checkers --prod --base-href=/applications/checkers/",
 		"clean": "rimraf dist/",
 		"copy:configs": "cpx src/assets/configs/.htaccess dist/checkers/",

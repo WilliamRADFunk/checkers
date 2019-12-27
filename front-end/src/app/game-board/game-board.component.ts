@@ -34,7 +34,6 @@ export class GameBoardComponent implements OnDestroy, OnInit {
                 this.playerNumber = pn;
             }),
             this._boardStateService.currStyleOFPieces.subscribe(style => {
-                console.log('ChangeDetected', style);
                 this.style = style;
             })
         );
