@@ -12,14 +12,8 @@ export class ExpressWrapper {
     private _app: Express = express();
     private _serverHttp = new http.Server(this._app);
     private _serverHttps = new https.Server(this._app);
-    private _ioHttp = socketIO(this._serverHttp, { origins: '*:*', });
-    private _ioHttps = socketIO(this._serverHttps, {
-        origins: [
-            'https://tenaciousteal.com',
-            'https://tenaciousteal.com:443',
-            'https://tenaciousteal.com/games/checkers:443'
-        ]
-    });
+    private _ioHttp = socketIO(this._serverHttp, { origins: '*:80', });
+    private _ioHttps = socketIO(this._serverHttps, { origins: '*:443', });
     private _people: number = 0;
     private _queue: { roomCode: string, playerId: string } = null;
     private _rooms: { [key: string]: { previousBoard: Board, player1: string; player2: string } } = {};
@@ -56,7 +50,6 @@ export class ExpressWrapper {
             socket.on('movement', this._makeMove.bind(this));
         });
 
-        // this._serverHttp.listen(5000);
         this._serverHttp.listen(80);
         console.log(`app running on port: ${80}`);
         this._serverHttps.listen(443);
