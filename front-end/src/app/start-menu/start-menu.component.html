@@ -6,7 +6,7 @@
     </div>
     <div class="d-flex justify-content-center">
         <div class="col text-center text-white mt-2">
-            <!-- <span class="h6 mb-2"><i>People currently playing Freckers: {{ peoplePlaying }}</i></span> -->
+            <span class="h6 mb-2"><i>People currently playing Freckers: {{ peoplePlaying }}</i></span>
         </div>
     </div>
     <div class="d-flex justify-content-center">
@@ -63,7 +63,6 @@
                     [class.btn-info]="activeOpponent !== choice"
                     (click)="opponentChange(choice)"
                     container="body"
-                    [disabled]="choice === 'Online Human'"
                     [ngbTooltip]="getTooltipMsg(choice)"
                     tooltipClass="checkers-tooltip"
                     placement="top"

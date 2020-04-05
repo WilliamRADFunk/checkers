@@ -16,7 +16,7 @@ import { StartMenuComponent } from './start-menu/start-menu.component';
 import { HelpScreenComponent } from './help-screen/help-screen.component';
 
 // const config: SocketIoConfig = { url: 'http://localhost:5000', options: {} };
-// const config: SocketIoConfig = { url: '157.245.226.187:80', options: {} };
+const config: SocketIoConfig = { url: '157.245.226.187:80', options: {} };
 // const config: SocketIoConfig = {
 //     url: 'https://the-something-long-anonymous-thing.casa.the-something-long-anonymous-thing.casa:443',
 //     options: {
@@ -42,7 +42,7 @@ import { HelpScreenComponent } from './help-screen/help-screen.component';
         HttpClientModule,
         NgbModule,
         ReactiveFormsModule,
-        // SocketIoModule.forRoot(config)
+        SocketIoModule.forRoot(config)
     ],
     providers: [ BoardStateService ],
     bootstrap: [ AppComponent ]

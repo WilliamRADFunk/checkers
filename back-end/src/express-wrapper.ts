@@ -12,7 +12,7 @@ export class ExpressWrapper {
     private _app: Express = express();
     private _serverHttp = new http.Server(this._app);
     private _serverHttps = new https.Server(this._app);
-    private _ioHttp = socketIO(this._serverHttp);
+    private _ioHttp = socketIO(this._serverHttp, { origins: '*:*', });
     private _ioHttps = socketIO(this._serverHttps, {
         origins: [
             'https://tenaciousteal.com',
