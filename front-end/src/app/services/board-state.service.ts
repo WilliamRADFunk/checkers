@@ -98,7 +98,7 @@ export class BoardStateService {
             this._gameStatus.next(data.board.gameStatus);
             if (data.id !== this._id) {
                 this._activePlayer.next(data.board.activePlayer || this._activePlayer.value);
-                this._boardState.next(data.board && data.board.board || this._boardState.value);
+                this._boardState.next(data.board || this._boardState.value);
                 // If game is over don't bother calculating moves.
                 if (data.board.gameStatus) {
                     return;
@@ -258,7 +258,6 @@ export class BoardStateService {
     }
 
     public disconnectSocket(opponentTimedout?: boolean) {
-        console.log('quit', this._id);
         this.socket.emit('quit', { id: this._id, timedout: opponentTimedout });
     }
 
@@ -284,11 +283,11 @@ export class BoardStateService {
     }
 
     public makeMoves(moveChainIds?: number[], moveChainCells?: Cell[]): void {
+        const boardState = this._boardState.value;
         this._readyToSubmit.next(false);
-        makeMoves(this._boardState.value, moveChainIds || this._moveChainIds.value, moveChainCells || this._moveChainCells);
+        makeMoves(boardState, moveChainIds || this._moveChainIds.value, moveChainCells || this._moveChainCells);
         this._changeTurn();
         if (this._opponent === 3) {
-            const boardState = this._boardState.value;
             boardState.activePlayer = this._activePlayer.value;
             boardState.gameStatus = this._gameStatus.value;
             this.socket.emit('movement', { board: boardState, id: this._id, roomCode: this._hostedRoomCode.value});

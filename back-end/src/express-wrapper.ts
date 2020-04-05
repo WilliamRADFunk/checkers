@@ -25,7 +25,7 @@ export class ExpressWrapper {
     private _rooms: { [key: string]: { previousBoard: Board, player1: string; player2: string } } = {};
 
     constructor() {
-        this._ioHttp.on("connection", socket => {
+        this._ioHttp.on('connection', socket => {
             this._people++;
             this._ioHttp.emit('updated people count', { people: this._people });
 
@@ -40,7 +40,7 @@ export class ExpressWrapper {
             socket.on('new player', this._joinRoom.bind(this));
             socket.on('movement', this._makeMove.bind(this));
         });
-        this._ioHttps.on("connection", socket => {
+        this._ioHttps.on('connection', socket => {
             this._people++;
             this._ioHttps.emit('updated people count', { people: this._people });
 
@@ -159,10 +159,12 @@ export class ExpressWrapper {
                 this._rooms[roomCode].player2 = null;
             }
             if (!this._rooms[roomCode].player1 && !this._rooms[roomCode].player2) {
+                console.log('Deleting room', roomCode);
                 this._rooms[roomCode] = null;
                 delete this._rooms[roomCode];
                 return;
             } else if ((!this._rooms[roomCode].player1 && this._rooms[roomCode].player2) || (this._rooms[roomCode].player1 && !this._rooms[roomCode].player2)) {
+                console.log('Forfeiting room', roomCode);
                 this._forfeit(roomCode);
                 this._rooms[roomCode] = null;
                 delete this._rooms[roomCode];
@@ -188,6 +190,7 @@ export class ExpressWrapper {
     }
 
     private _makeMove(data): void {
+        console.log('Move Made');
         this._rooms[data.roomCode].previousBoard = data.board;
         this._ioHttp.emit('move made', { board: data.board, id: data.id, roomCode: data.roomCode });
         this._ioHttps.emit('move made', { board: data.board, id: data.id, roomCode: data.roomCode });
